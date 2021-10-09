@@ -123,9 +123,13 @@ export default {
     },
     async logout() {
       try {
-        await this.$auth.logout();
+        this.$store.commit("profile/SET_IS_AUTHENTICATED", false);
+        this.$store.commit("profile/SET_ADMIN", {});
+        this.$store.commit("profile/SET_ACCESS_TOKEN", "");
+        this.$router.push("/");
+        localStorage.clear();
       } catch (error) {
-        this.$toast.error(error.response.message);
+        this.$toast.error("Oops... Error Logging Out");
       }
     },
   },

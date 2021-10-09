@@ -41,15 +41,6 @@
             height: 0;
           "
         />
-        <sidebar-item
-          :link="{
-            name: 'Icons',
-            path: '/components/icons',
-            icon: 'ni ni-planet',
-          }"
-        />
-
-        
       </template>
     </side-bar>
     <div class="main-content">
