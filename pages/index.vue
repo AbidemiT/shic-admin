@@ -66,7 +66,7 @@
 
                 <div class="text-center">
                   <base-button type="primary" native-type="submit" class="my-4"
-                    >Sign in</base-button
+                    >{{loading ? 'Signing In....' : 'Sign in'}}</base-button
                   >
                 </div>
               </form>
@@ -104,6 +104,7 @@ export default {
   // },
   data() {
     return {
+      loading: false,
       user: {
         email: '',
         password: ''
@@ -112,19 +113,23 @@ export default {
   },
   methods: {
     async handleSubmit() {
+      this.loading = true;
       console.log({user: this.user});
       let url = 'https://apiv1.smarthalalinvestorclub.com/api/v1/auth/login'
 
       try {
         let response =  await this.$axios.post(url, this.user);
+        this.loading = false
         console.log({response});
         this.$store.commit('profile/SET_IS_AUTHENTICATED', true)
         this.$store.commit('profile/SET_ADMIN', response.data.data.user)
         this.$store.commit('profile/SET_ACCESS_TOKEN', response.data.data.access_token)
         localStorage.setItem('token', response.data.data.access_token)
+        this.$store.dispatch('users/getUsersInvestment');
         this.$router.push("/dashboard");
       } catch (error) {
         console.log({error});
+        this.loading = false
         if (error.response) {
           this.$notify({
             type: "danger",

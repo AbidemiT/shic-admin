@@ -23,14 +23,33 @@
           "
         />
         <sidebar-item
-            opened
-            :link="{
-              name: 'User Management',
-              path: '/user-management',
-              icon: 'ni ni-single-02',
-            }"
-          />
-          <hr
+          opened
+          :link="{
+            name: 'User Management',
+            path: '/user-management',
+            icon: 'ni ni-single-02',
+          }"
+        />
+        <hr
+          class="my-3"
+          style="
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            min-width: 80%;
+            overflow: visible;
+            box-sizing: content-box;
+            height: 0;
+          "
+        />
+        <sidebar-item
+          opened
+          :link="{
+            name: 'User Investments',
+            path: '/user-investments',
+            icon: 'ni ni-chart-bar-32',
+          }"
+        />
+        <hr
           class="my-3"
           style="
             border: 0;

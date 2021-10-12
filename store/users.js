@@ -4,6 +4,7 @@ export const state = () => ({
   list: {},
   user: {},
   users: [],
+  usersInvestment: [],
   meta: {},
   url: null
 });
@@ -23,6 +24,9 @@ export const mutations = {
   },
   SET_USERS: (state, users) => {
     state.users = users;
+  },
+  SET_USERS_INVESTMENT: (state, usersInvestment) => {
+    state.usersInvestment = usersInvestment;
   }
 };
 
@@ -39,6 +43,13 @@ export const actions = {
       .then((users) => {
         console.log({users});
         commit('SET_USERS', users);
+      });
+  },
+  getUsersInvestment({commit}) {
+    return service.getUsersInvestment(this.$axios)
+      .then((usersInvestment) => {
+        console.log({usersInvestment});
+        commit('SET_USERS_INVESTMENT', usersInvestment);
       });
   },
 
@@ -74,6 +85,7 @@ export const getters = {
   listTotal: state => state.meta.page.total,
   user: state => state.user,
   getUsers: state => state.users,
+  getUsersInvestment: state => state.usersInvestment,
   totalUsers: state => state.users.length,
   url: state => state.url
 };

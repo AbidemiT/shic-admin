@@ -32,15 +32,6 @@ export default function ({
     // eslint-disable-next-line no-console
     console.log(`Request made from ${config.url} returned`)
   })
-
-  async function logout() {
-    await app.$auth.logout()
-    app.$auth.setToken('local', false)
-    store.commit('alerts/removeAll')
-    if (route.path !== '/login') {
-      redirect({ name: 'login' })
-    }
-  }
 }
 
   

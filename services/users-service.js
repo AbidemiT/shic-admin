@@ -36,6 +36,12 @@ async function getUsers(axios) {
   let users = response.data.data
   return users;
 }
+async function getUsersInvestment(axios) {
+  let response = await axios.get(`https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments`)
+  console.log({responseUserInvestment: response});
+  let usersInvestment = response.data.data
+  return usersInvestment;
+}
 
 function add(user, axios) {
   const payload = jsona.serialize({
@@ -90,6 +96,7 @@ export default {
   list,
   get,
   getUsers,
+  getUsersInvestment,
   add,
   update,
   destroy,

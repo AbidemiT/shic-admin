@@ -41,48 +41,42 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th scope="col">User ID</th>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
-                  <th scope="col">Phone Number</th>
-                  <th scope="col">Subscription Package</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Joined</th>
+                  <th scope="col">Investment</th>
+                  <th scope="col">Amount (N)</th>
+                  <th scope="col">Depositor</th>
+                  <th scope="col">Depositor's Bank</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(user, i) in users" :key="i">
+                <tr v-for="(investment, i) in usersInvestment" :key="i">
                   <td>
-                    {{ user.id }}
+                    {{ `${investment.user.name}` }}
+                  </td>
+                  <td>{{ investment.user.email }}</td>
+                  <td>
+                    {{ investment.investment_product.name}}
+                  </td>
+                  <td>{{ investment.payment_data.amount_deposited }}</td>
+                  <td>
+                    {{investment.payment_data.account_name_sent_from}}
                   </td>
                   <td>
-                    {{ `${user.profile.first_name} ${user.profile.last_name}` }}
+                    {{investment.payment_data.bank_name_sent_from}}
                   </td>
-                  <td>{{ user.email }}</td>
-                  <td>{{ user.profile.phone }}</td>
-                  <td v-if="user.subscription">
-                    {{
-                      user.subscription.subscription_package_id == 1
-                        ? "Platinum"
-                        : user.subscription.subscription_package_id == 2
-                        ? "Gold"
-                        : "Starter"
-                    }}
-                  </td>
-                  <td v-else>Unsubscribed</td>
-                  <td v-if="user.subscription">
+                  <td v-if="investment.status">
                     <span class="badge badge-success">Active</span>
                   </td>
                   <td v-else>
                     <span class="badge badge-warning">Pending</span>
                   </td>
-                  <td>{{ user.account_creation_date }}</td>
                   <td>
-                    <el-dropdown trigger="click" class="dropdown" v-if="!user.subscription">
+                    <el-dropdown trigger="click" class="dropdown">
                       <span
                         class="btn btn-sm btn-icon-only text-light"
                         aria-label="Dropdown menu"
-                        @click="setUserId(user.id)"
+                        @click="setUserInvestmentId(investment.id)"
                       >
                         <i class="fas fa-ellipsis-v mt-2"></i>
                       </span>
@@ -91,17 +85,23 @@
                         role="list"
                         slot="dropdown"
                       >
+                        
                         <a
                           class="dropdown-item"
-                          href="#"
-                          @click="modals.modal1 = true"
-                          >Approve User</a
+                          href="#" v-if="!investment.status"
+                          @click="approveUserInvestment"
+                          >Approve Investment</a
                         >
-                        <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                        <a
+                          class="dropdown-item"
+                          href="#" v-else
+                          @click="deleteUserInvestment"
+                          >Delete Investment</a
+                        >
                       </el-dropdown-menu>
                     </el-dropdown>
                   </td>
-                  <modal :show.sync="modals.modal1">
+                  <!-- <modal :show.sync="modals.modal1">
                     <h6
                       slot="header"
                       class="modal-title mb-0"
@@ -164,7 +164,7 @@
                         >Close
                       </base-button>
                     </template>
-                  </modal>
+                  </modal> -->
                 </tr>
               </tbody>
             </table>
@@ -270,31 +270,18 @@ export default {
         user_id: "",
         start_date: "",
       },
-      userId: "",
+      userInvestmentId: "",
       modals: {
         modal1: false,
       },
     };
   },
   mounted() {
-    this.$modal.hide("user_modal");
-    this.$modal.show("approve_user_modal");
   },
   computed: {
     ...mapGetters({
-      users: "users/getUsers",
+      usersInvestment: "users/getUsersInvestment",
     }),
-    from() {
-      return this.pagination.perPage * (this.pagination.currentPage - 1);
-    },
-
-    to() {
-      let highBound = this.from + this.pagination.perPage;
-      if (this.total < highBound) {
-        highBound = this.total;
-      }
-      return highBound;
-    },
   },
 
   created() {
@@ -302,26 +289,24 @@ export default {
   },
 
   methods: {
-    setUserId(userId) {
+    setUserInvestmentId(setUserInvestmentId) {
       console.log("Okay ooo");
-      console.log(userId);
-      this.userId = userId;
+      console.log({setUserInvestmentId});
+      this.userInvestmentId = setUserInvestmentId;
     },
-    async approveUser() {
+    async approveUserInvestment() {
       this.approvalLoading = true
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/user/subscriptions/${this.userId}`;
-      this.userSub.user_id = this.userId;
+      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments/${this.userInvestmentId}`;
 
       try {
-        console.log({ userSub: this.userSub });
-        let response = await this.$axios.patch(url, this.userSub);
+        let response = await this.$axios.patch(url, {status: 1});
         this.approvalLoading = false
         console.log({ approvalResponse: response });
         this.$notify({
           type: "success",
-          message: "User Approved",
+          message: "Investment Approved",
         });
-        this.$store.dispatch('user/getUsers')
+        this.$store.dispatch('user/getUsersInvestment')
       } catch (error) {
         console.log({ error });
         this.approvalLoading = false
@@ -335,33 +320,41 @@ export default {
         if (error.response) {
           this.$notify({
             type: "danger",
-            message: `Oops... Error Approving User`,
+            message: `Oops... Error Approving Investment`,
           });
         }
       }
     },
-    getList() {
-      this.users = [
-        {
-          name: "Admin",
-          email: "admin@jsonapi.com",
-          created_at: "2020-01-01",
-        },
-      ];
-    },
-    onProFeature() {
-      this.$notify({
-        type: "danger",
-        message: "This is a PRO feature.",
-      });
-    },
-    sortChange({ prop, order }) {
-      if (order === "descending") {
-        this.sort = `-${prop}`;
-      } else {
-        this.sort = `${prop}`;
+    async deleteUserInvestment() {
+      this.approvalLoading = true
+      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments/${this.userInvestmentId}`;
+
+      try {
+        let response = await this.$axios.delete(url);
+        this.approvalLoading = false
+        console.log({ approvalResponse: response });
+        this.$notify({
+          type: "success",
+          message: "Investment Deleted",
+        });
+        this.$store.dispatch('user/getUsersInvestment')
+      } catch (error) {
+        console.log({ error });
+        this.approvalLoading = false
+        if (error.message) {
+          this.$notify({
+            type: "danger",
+            message: `Oops... ${error.message}`,
+          });
+        }
+
+        if (error.response) {
+          this.$notify({
+            type: "danger",
+            message: `Oops... Error Deleting Investment`,
+          });
+        }
       }
-      this.getList();
     },
   },
 };
