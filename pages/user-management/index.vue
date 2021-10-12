@@ -314,7 +314,7 @@ export default {
 
       try {
         console.log({ userSub: this.userSub });
-        let response = await this.$axios.patch(url, this.userSub);
+        let response = await this.$axios.put(url, this.userSub);
         this.approvalLoading = false
         console.log({ approvalResponse: response });
         this.$notify({

@@ -44,7 +44,7 @@
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
                   <th scope="col">Investment</th>
-                  <th scope="col">Amount (N)</th>
+                  <th scope="col">Amount <br> Deposited (₦)</th>
                   <th scope="col">Depositor</th>
                   <th scope="col">Depositor's Bank</th>
                 </tr>
@@ -299,14 +299,14 @@ export default {
       let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments/${this.userInvestmentId}`;
 
       try {
-        let response = await this.$axios.patch(url, {status: 1});
+        let response = await this.$axios.put(url, {status: 1});
         this.approvalLoading = false
         console.log({ approvalResponse: response });
         this.$notify({
           type: "success",
           message: "Investment Approved",
         });
-        this.$store.dispatch('user/getUsersInvestment')
+        this.$store.dispatch('users/getUsersInvestment')
       } catch (error) {
         console.log({ error });
         this.approvalLoading = false
