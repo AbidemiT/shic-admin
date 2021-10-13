@@ -11,6 +11,11 @@
             <div class="col-6">
               <h3 class="mb-0">Users List</h3>
             </div>
+            <div class="col-6">
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Search by User email or Investment Name" v-model="investment">
+              </div>
+            </div>
           </div>
         </template>
         <div>
@@ -50,7 +55,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(investment, i) in usersInvestment" :key="i">
+                <tr v-for="(investment, i) in searchInvestment" :key="i">
                   <td>
                     {{ `${investment.user.name}` }}
                   </td>
@@ -270,6 +275,7 @@ export default {
         user_id: "",
         start_date: "",
       },
+      investment: '',
       userInvestmentId: "",
       modals: {
         modal1: false,
@@ -279,6 +285,16 @@ export default {
   mounted() {
   },
   computed: {
+    searchInvestment() {
+      if (this.investment === '') {
+        return this.usersInvestment
+      } else {
+        return this.usersInvestment.filter((investment) => {
+          let investmentNameAndEmail = `${investment.investment_product.name} ${investment.user.email}`
+          return investmentNameAndEmail.toLowerCase().includes(this.investment.toLowerCase())
+        })
+      }
+    },
     ...mapGetters({
       usersInvestment: "users/getUsersInvestment",
     }),

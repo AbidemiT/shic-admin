@@ -11,6 +11,11 @@
             <div class="col-6">
               <h3 class="mb-0">Users List</h3>
             </div>
+            <div class="col-6">
+              <div class="form-group">
+                <input class="form-control" type="text" placeholder="Search by name or email" v-model="user">
+              </div>
+            </div>
           </div>
         </template>
         <div>
@@ -51,7 +56,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(user, i) in users" :key="i">
+                <tr v-for="(user, i) in searchUser" :key="i">
                   <td>
                     {{ user.id }}
                   </td>
@@ -271,6 +276,7 @@ export default {
         start_date: "",
       },
       userId: "",
+      user: '',
       modals: {
         modal1: false,
       },
@@ -281,6 +287,16 @@ export default {
     this.$modal.show("approve_user_modal");
   },
   computed: {
+    searchUser() {
+      if (this.user === '') {
+        return this.users
+      } else {
+        return this.users.filter((user) => {
+          let fullNameAndEmail = `${user.profile.first_name} ${user.profile.last_name} ${user.email}`
+          return fullNameAndEmail.toLowerCase().includes(this.user.toLowerCase())
+        })
+      }
+    },
     ...mapGetters({
       users: "users/getUsers",
     }),
