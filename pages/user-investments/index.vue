@@ -9,7 +9,7 @@
         <template slot="header">
           <div class="row">
             <div class="col-6">
-              <h3 class="mb-0">Users List</h3>
+              <h3 class="mb-0">Investments List</h3>
             </div>
             <div class="col-6">
               <div class="form-group">
@@ -99,68 +99,25 @@
                         >
                         <a
                           class="dropdown-item"
-                          href="#" v-else
-                          @click="deleteUserInvestment"
+                          href="#"
+                          @click="confirmDelete"
                           >Delete Investment</a
                         >
                       </el-dropdown-menu>
                     </el-dropdown>
                   </td>
-                  <!-- <modal :show.sync="modals.modal1">
+                 <modal :show.sync="modals.modal1">
                     <h6
                       slot="header"
                       class="modal-title mb-0"
                       id="modal-title-default"
                     >
-                      Approve User
+                      Delete User Investment
                     </h6>
-                    <div class="form-group row">
-                      <label
-                        for="example-date-input"
-                        class="col-md-6 col-form-label form-control-label"
-                        >Subscriptions:</label
-                      >
-                      <div class="col-md-12">
-                        <el-select
-                        class="select-danger"
-                        placeholder="Select Subscription"
-                        v-model="userSub.subscription_package_id"
-                      >
-                        <el-option
-                          v-for="option in [
-                            { value: 1, label: 'Platinum' },
-                            { value: 2, label: 'Gold' },
-                            { value: 3, label: 'Starter' },
-                          ]"
-                          class="select-danger"
-                          :value="option.value"
-                          :label="option.label"
-                          :key="option.label"
-                        >
-                        </el-option>
-                      </el-select>
-                      </div>
-                      
-                    </div>
-                    <div class="form-group row">
-                      <label
-                        for="example-date-input"
-                        class="col-md-6 col-form-label form-control-label"
-                        >Start Date:</label
-                      >
-                      <div class="col-md-12">
-                        <base-input
-                          type="date"
-                          value="2018-11-23"
-                          id="example-date-input"
-                          v-model="userSub.start_date"
-                        />
-                      </div>
-                    </div>
-
+                    <p>Are you sure you want to delete User Investment?</p>
                     <template slot="footer">
-                      <base-button type="primary" @click="approveUser"
-                        >{{ approvalLoading ? 'Approving User...' : 'Save changes'}}</base-button
+                      <base-button type="primary" @click="deleteUserInvestment"
+                        >{{ deleteLoading ? 'Deleting User Investment...' : 'Delete User Investment'}}</base-button
                       >
                       <base-button
                         type="link"
@@ -169,29 +126,11 @@
                         >Close
                       </base-button>
                     </template>
-                  </modal> -->
+                  </modal>
                 </tr>
               </tbody>
             </table>
           </div>
-          <!-- Modal Approve User -->
-
-          <!-- <modal
-                    name="approve_user_modal"
-                    class="modal__view success_modal"
-                    :width="390"
-                    :height="170"
-                  >
-                    <div class="container">
-                      <form class="row">
-                        <div class="col">
-                          hello
-                        </div>
-                      </form>
-                    </div>
-                  </modal> -->
-
-          <!-- End Modal -->
         </div>
         <!-- <div
           slot="footer"
@@ -267,6 +206,7 @@ export default {
       },
 
       approvalLoading: false,
+      deleteLoading: false,
 
       total: 1,
       userSub: {
@@ -305,9 +245,10 @@ export default {
   },
 
   methods: {
+    confirmDelete() {
+      this.modals.modal1 = true;
+    },
     setUserInvestmentId(setUserInvestmentId) {
-      console.log("Okay ooo");
-      console.log({setUserInvestmentId});
       this.userInvestmentId = setUserInvestmentId;
     },
     async approveUserInvestment() {
@@ -342,13 +283,14 @@ export default {
       }
     },
     async deleteUserInvestment() {
-      this.approvalLoading = true
+      this.deleteLoading = true
       let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments/${this.userInvestmentId}`;
 
       try {
         let response = await this.$axios.delete(url);
-        this.approvalLoading = false
+        this.deleteLoading = false
         console.log({ approvalResponse: response });
+          this.$store.dispatch('user/getUsersInvestment')
         this.$notify({
           type: "success",
           message: "Investment Deleted",
@@ -356,7 +298,7 @@ export default {
         this.$store.dispatch('user/getUsersInvestment')
       } catch (error) {
         console.log({ error });
-        this.approvalLoading = false
+        this.deleteLoading = false
         if (error.message) {
           this.$notify({
             type: "danger",

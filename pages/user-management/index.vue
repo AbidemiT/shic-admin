@@ -174,24 +174,6 @@
               </tbody>
             </table>
           </div>
-          <!-- Modal Approve User -->
-
-          <!-- <modal
-                    name="approve_user_modal"
-                    class="modal__view success_modal"
-                    :width="390"
-                    :height="170"
-                  >
-                    <div class="container">
-                      <form class="row">
-                        <div class="col">
-                          hello
-                        </div>
-                      </form>
-                    </div>
-                  </modal> -->
-
-          <!-- End Modal -->
         </div>
         <!-- <div
           slot="footer"
