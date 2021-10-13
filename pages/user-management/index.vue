@@ -316,6 +316,7 @@ export default {
         console.log({ userSub: this.userSub });
         let response = await this.$axios.put(url, this.userSub);
         this.approvalLoading = false
+        this.$store.dispatch('users/getUsers');
         console.log({ approvalResponse: response });
         this.$notify({
           type: "success",
