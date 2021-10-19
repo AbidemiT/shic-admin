@@ -235,7 +235,8 @@
                       type="text"
                       placeholder=" in Months e.g 1 Month, 12 Months"
                       v-model="investmentData.duration"
-                      required id="duration"
+                      required
+                      id="duration"
                     />
                   </div>
                 </div>
@@ -243,18 +244,37 @@
               <div class="col-md-3">
                 <div class="form-group row">
                   <label
-                    for="investmentDescription"
+                    for="investmentStatus"
                     class="col-md-6 col-form-label form-control-label"
                     >Status</label
                   >
                   <div class="col-md-12">
-                    <base-input
+                    <el-select
+                      class="select-danger"
+                      placeholder="Select Investment Status"
+                      v-model="investmentData.status"
+                      required
+                      id="investmentStatus"
+                    >
+                      <el-option
+                        v-for="option in [
+                          { value: 1, label: 'Active' },
+                          { value: 0, label: 'Closed' },
+                        ]"
+                        class="select-danger"
+                        :value="option.value"
+                        :label="option.label"
+                        :key="option.label"
+                      >
+                      </el-option>
+                    </el-select>
+                    <!-- <base-input
                       type="text"
                       placeholder=" 1 for Active, 0 for Closed"
                       v-model="investmentData.status"
                       required
                       id="investmentDescription"
-                    />
+                    /> -->
                   </div>
                 </div>
               </div>
@@ -325,7 +345,11 @@
                 >
                   <div class="col-md-6 text-right">
                     <button class="btn-sm btn-primary">
-                      {{newInvestmentLoading ? 'Creating New Investment' : 'Save New Investment'}}
+                      {{
+                        newInvestmentLoading
+                          ? "Creating New Investment"
+                          : "Save New Investment"
+                      }}
                     </button>
                   </div>
                   <div class="col-md-6 text-right">
@@ -394,7 +418,7 @@ export default {
         dollar: "0",
         status: "",
         banner_link: "",
-        document_links: ""
+        document_links: "",
       },
       investments: null,
       modals: {
@@ -410,22 +434,23 @@ export default {
       this.investmentForm = !this.investmentForm;
     },
     async newInvestment() {
-      let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
-      this.newInvestmentLoading = true
-      this.investmentForm = false
-      console.log({dataData: this.investmentData});
+      let url =
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+      this.newInvestmentLoading = true;
+      this.investmentForm = false;
+      console.log({ dataData: this.investmentData });
 
       try {
         let response = await this.$axios.post(url, this.investmentData);
         console.log({ responseSave: response });
-        this.newInvestmentLoading = false
+        this.newInvestmentLoading = false;
         this.fetchInvestments();
         this.$notify({
           type: "success",
           message: `Investment created Successfully`,
         });
       } catch (error) {
-          this.newInvestmentLoading = false
+        this.newInvestmentLoading = false;
         if (error.message) {
           this.$notify({
             type: "danger",
@@ -448,8 +473,9 @@ export default {
     //   this.userId = userId;
     // },
     async fetchInvestments() {
-      let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product"
-    //   let url = "http://209.97.136.114/api/v1/investment/_product";
+      let url =
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+      //   let url = "http://209.97.136.114/api/v1/investment/_product";
 
       try {
         let response = await this.$axios.get(url);
