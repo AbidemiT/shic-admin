@@ -775,10 +775,10 @@ export default {
       this.investmentForm = !this.investmentForm;
     },
     async updateInvestment() {
-      let url =
-        `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
       // let url =
-      //   `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product//${this.investmentId}`;
+      //   `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
+      let url =
+        `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product//${this.investmentId}`;
       this.updateInvestmentLoading = true;
       this.investmentUpdateForm = false;
       console.log({ updateData: this.investmentUpdateData });
@@ -810,10 +810,10 @@ export default {
       }
     },
     async newInvestment() {
-      let url =
-        "http://209.97.136.114/api/v1/investment/_product";
       // let url =
-      //   "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+      //   "http://209.97.136.114/api/v1/investment/_product";
+      let url =
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
       this.newInvestmentLoading = true;
       this.investmentForm = false;
       console.log({ dataData: this.investmentData });
@@ -845,10 +845,10 @@ export default {
       }
     },
     async deleteInvestment() {
-      let url =
-        `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
       // let url =
-      //   `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
+      //   `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
+      let url =
+        `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
       this.deleteInvestmentLoading = true;
       this.modals.modal1 = false;
       console.log({ dataData: this.investmentData });
@@ -886,9 +886,9 @@ export default {
     //   this.userId = userId;
     // },
     async fetchInvestments() {
-      // let url =
-        // "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
-        let url = "http://209.97.136.114/api/v1/investment/_product";
+      let url =
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+        // let url = "http://209.97.136.114/api/v1/investment/_product";
 
       try {
         let response = await this.$axios.get(url);
