@@ -1,5 +1,12 @@
 <template>
   <div class="container-fluid mt-5">
+    <div class="row justify-content-end my-4">
+      <div class="col-6 text-right">
+        <button class="btn btn-sm btn-success" @click="toggleInvestmentForm" v-if="!investmentForm && !investmentUpdateForm">
+          New Investment
+        </button>
+      </div>
+    </div>
     <div v-if="!investmentForm && !investmentUpdateForm">
       <card
         class="no-border-card"
@@ -10,14 +17,6 @@
           <div class="row">
             <div class="col-6">
               <h3 class="mb-0">Investments</h3>
-            </div>
-            <div class="col-6">
-              <div
-                class="btn btn-sm btn-secondary"
-                @click="toggleInvestmentForm"
-              >
-                New Investment
-              </div>
             </div>
           </div>
         </template>
@@ -64,7 +63,10 @@
                       <span
                         class="btn btn-sm btn-icon-only text-light"
                         aria-label="Dropdown menu"
-                        @click="setInvestmentId(investment.id), setInvestment(investment)"
+                        @click="
+                          setInvestmentId(investment.id),
+                            setInvestment(investment)
+                        "
                       >
                         <i class="fas fa-ellipsis-v mt-2"></i>
                       </span>
@@ -77,7 +79,7 @@
                           class="dropdown-item"
                           href="#"
                           @click="investmentUpdateForm = true"
-                          >Update Investment</a
+                          >Edit Investment</a
                         >
                         <a
                           class="dropdown-item"
@@ -92,26 +94,28 @@
               </tbody>
             </table>
             <modal :show.sync="modals.modal1">
-                    <h6
-                      slot="header"
-                      class="modal-title mb-0"
-                      id="modal-title-default"
-                    >
-                      Delete Investment
-                    </h6>
-                    <p>Are you sure you want to delete Investment?</p>
-                    <template slot="footer">
-                      <base-button type="primary" @click="deleteInvestment"
-                        >{{ deleteInvestmentLoading ? 'Deleting Investment...' : 'Delete Investment'}}</base-button
-                      >
-                      <base-button
-                        type="link"
-                        class="ml-auto"
-                        @click="modals.modal1 = false"
-                        >Close
-                      </base-button>
-                    </template>
-                  </modal>
+              <h6
+                slot="header"
+                class="modal-title mb-0"
+                id="modal-title-default"
+              >
+                Delete Investment
+              </h6>
+              <p>Are you sure you want to delete Investment?</p>
+              <template slot="footer">
+                <base-button type="primary" @click="deleteInvestment">{{
+                  deleteInvestmentLoading
+                    ? "Deleting Investment..."
+                    : "Delete Investment"
+                }}</base-button>
+                <base-button
+                  type="link"
+                  class="ml-auto"
+                  @click="modals.modal1 = false"
+                  >Close
+                </base-button>
+              </template>
+            </modal>
           </div>
         </div>
       </card>
@@ -151,12 +155,29 @@
                     >Category ID:</label
                   >
                   <div class="col-md-12">
-                    <base-input
+                    <!-- <base-input
                       type="text"
                       v-model="investmentData.investment_category_id"
                       required
                       id="id"
-                    />
+                    /> -->
+
+                    <el-select
+                      class="select-danger"
+                      placeholder="Select Investment Category"
+                      v-model="investmentData.investment_category_id"
+                      required
+                      id="id"
+                    >
+                      <el-option
+                        v-for="category in categories"
+                        class="select-danger"
+                        :value="String(category.id)"
+                        :label="category.name"
+                        :key="category.id"
+                      >
+                      </el-option>
+                    </el-select>
                   </div>
                 </div>
               </div>
@@ -341,7 +362,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-md-6">
                 <div class="form-group row align-items-end">
                   <label
                     for="investmentDescription"
@@ -360,6 +381,9 @@
                   </div>
                 </div>
               </div>
+              
+            </div>
+            <div class="row my-5">
               <div class="col-md-4">
                 <div
                   class="
@@ -370,18 +394,18 @@
                     align-items-end
                   "
                 >
-                  <div class="col-md-6 text-right">
-                    <button class="btn-sm btn-primary">
+                  <div class="col-md-6">
+                    <button class="btn btn-sm btn-success">
                       {{
                         updateInvestmentLoading
                           ? "Updating Investment"
-                          : "Update Investment"
+                          : "Save Investment"
                       }}
                     </button>
                   </div>
-                  <div class="col-md-6 text-right">
+                  <div class="col-md-6">
                     <button
-                      class="btn-sm btn-danger"
+                      class="btn btn-sm btn-danger"
                       @click.prevent="toggleInvestmentForm"
                     >
                       Cancel
@@ -619,7 +643,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-md-6">
                 <div class="form-group row align-items-end">
                   <label
                     for="investmentDescription"
@@ -638,6 +662,9 @@
                   </div>
                 </div>
               </div>
+              
+            </div>
+            <div class="row my-5">
               <div class="col-md-4">
                 <div
                   class="
@@ -648,18 +675,18 @@
                     align-items-end
                   "
                 >
-                  <div class="col-md-6 text-right">
-                    <button class="btn-sm btn-primary">
+                  <div class="col-md-6">
+                    <button class="btn btn-sm btn-success">
                       {{
                         newInvestmentLoading
-                          ? "Creating New Investment"
-                          : "Save New Investment"
+                          ? "Updating Investment"
+                          : "Update Investment"
                       }}
                     </button>
                   </div>
-                  <div class="col-md-6 text-right">
+                  <div class="col-md-6">
                     <button
-                      class="btn-sm btn-danger"
+                      class="btn btn-sm btn-danger"
                       @click.prevent="investmentUpdateForm = false"
                     >
                       Cancel
@@ -727,22 +754,23 @@ export default {
         document_links: "",
       },
       investmentUpdateData: {
-        name: '',
-      description: '',
-      start_date: '',
-      end_date: '',
-      maximum_amount: '',
-      minimum_amount: '',
-      banner_link: '',
-      document_links: '',
-      roi: '',
-      duration: '',
-      status: '',
-      investment_category_id: '',
-      dollar:'0'
+        name: "",
+        description: "",
+        start_date: "",
+        end_date: "",
+        maximum_amount: "",
+        minimum_amount: "",
+        banner_link: "",
+        document_links: "",
+        roi: "",
+        duration: "",
+        status: "",
+        investment_category_id: "",
+        dollar: "0",
       },
       investments: null,
-      investmentId: '',
+      categories: null,
+      investmentId: "",
       modals: {
         modal1: false,
       },
@@ -750,35 +778,61 @@ export default {
   },
   created() {
     this.fetchInvestments();
+    this.fecthCategories();
   },
   methods: {
     setInvestmentId(id) {
-      this.investmentId = id
+      this.investmentId = id;
+    },
+    async fecthCategories() {
+        let url =
+          "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
+      // let url = "http://209.97.136.114/api/v1/investment/_category";
+
+      try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.categories = response.data.data;
+      } catch (error) {
+        if (error.message) {
+          this.$notify({
+            type: "danger",
+            message: `Oops... ${error.message}`,
+          });
+        }
+
+        if (error.response) {
+          this.$notify({
+            type: "danger",
+            message: `Oops... Error Fetching Categories`,
+          });
+        }
+      }
     },
     setInvestment(investment) {
       // console.log({selectedInvestment: investment});
-      this.investmentUpdateData.name = investment.name
-      this.investmentUpdateData.description = investment.description
-      this.investmentUpdateData.start_date = investment.start_date
-      this.investmentUpdateData.end_date = investment.end_date
-      this.investmentUpdateData.maximum_amount = investment.maximum_amount
-      this.investmentUpdateData.minimum_amount = investment.minimum_amount
-      this.investmentUpdateData.banner_link = investment.banner_link
-      this.investmentUpdateData.document_links = investment.document_links
-      this.investmentUpdateData.roi = investment.roi
-      this.investmentUpdateData.duration = investment.duration
-      this.investmentUpdateData.status = investment.status
-      this.investmentUpdateData.investment_category_id = String(investment.investment_category.id)
-      this.investmentUpdateData.dollar = '0'
+      this.investmentUpdateData.name = investment.name;
+      this.investmentUpdateData.description = investment.description;
+      this.investmentUpdateData.start_date = investment.start_date;
+      this.investmentUpdateData.end_date = investment.end_date;
+      this.investmentUpdateData.maximum_amount = investment.maximum_amount;
+      this.investmentUpdateData.minimum_amount = investment.minimum_amount;
+      this.investmentUpdateData.banner_link = investment.banner_link;
+      this.investmentUpdateData.document_links = investment.document_links;
+      this.investmentUpdateData.roi = investment.roi;
+      this.investmentUpdateData.duration = investment.duration;
+      this.investmentUpdateData.status = investment.status;
+      this.investmentUpdateData.investment_category_id = String(
+        investment.investment_category.id
+      );
+      this.investmentUpdateData.dollar = "0";
     },
     toggleInvestmentForm() {
       this.investmentForm = !this.investmentForm;
     },
     async updateInvestment() {
-      // let url =
-      //   `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url =
-        `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product//${this.investmentId}`;
+      // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
+      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product//${this.investmentId}`;
       this.updateInvestmentLoading = true;
       this.investmentUpdateForm = false;
       console.log({ updateData: this.investmentUpdateData });
@@ -810,10 +864,9 @@ export default {
       }
     },
     async newInvestment() {
-      // let url =
-      //   "http://209.97.136.114/api/v1/investment/_product";
+      // let url = "http://209.97.136.114/api/v1/investment/_product";
       let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+      "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
       this.newInvestmentLoading = true;
       this.investmentForm = false;
       console.log({ dataData: this.investmentData });
@@ -845,8 +898,7 @@ export default {
       }
     },
     async deleteInvestment() {
-      // let url =
-      //   `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
+      // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
       let url =
         `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
       this.deleteInvestmentLoading = true;
@@ -888,7 +940,7 @@ export default {
     async fetchInvestments() {
       let url =
         "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
-        // let url = "http://209.97.136.114/api/v1/investment/_product";
+      // let url = "http://209.97.136.114/api/v1/investment/_product";
 
       try {
         let response = await this.$axios.get(url);

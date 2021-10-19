@@ -1,5 +1,15 @@
 <template>
   <div class="container-fluid mt-5">
+    <div class="row my-4 justify-content-end">
+      <div class="col-6 text-right">
+              <div
+                class="btn btn-sm btn-success"
+                @click="modals.modal1 = true"
+              >
+                New Investment Category
+              </div>
+            </div>
+    </div>
     <div>
       <card
         class="no-border-card"
@@ -10,14 +20,6 @@
           <div class="row">
             <div class="col-6">
               <h3 class="mb-0">Investment Categories</h3>
-            </div>
-            <div class="col-6">
-              <div
-                class="btn btn-sm btn-secondary"
-                @click="modals.modal1 = true"
-              >
-                New Investment Category
-              </div>
             </div>
           </div>
         </template>
@@ -125,7 +127,7 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-sm btn-primary">{{
+            <button type="submit" class="btn btn-sm btn-success">{{
               newCategoryLoading ? "Saving Category..." : "Save category"
             }}</button>
             <base-button
@@ -200,7 +202,7 @@ export default {
     // },
     async newInvestmentCategory() {
       let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
-    //   let url = "http://209.97.136.114/api/v1/investment/_category";
+      // let url = "http://209.97.136.114/api/v1/investment/_category";
       this.newCategoryLoading = true;
       this.modals.modal1 = false
 
@@ -231,9 +233,8 @@ export default {
       }
     },
     async fecthCategories() {
-        let url =
-          "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
-    //   let url = "http://209.97.136.114/api/v1/investment/_category";
+        let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
+      // let url = "http://209.97.136.114/api/v1/investment/_category";
 
       try {
         let response = await this.$axios.get(url);
