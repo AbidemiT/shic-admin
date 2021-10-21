@@ -2,7 +2,11 @@
   <div class="container-fluid mt-5">
     <div class="row justify-content-end my-4">
       <div class="col-6 text-right">
-        <button class="btn btn-sm btn-success" @click="toggleInvestmentForm" v-if="!investmentForm && !investmentUpdateForm">
+        <button
+          class="btn btn-sm btn-success"
+          @click="toggleInvestmentForm"
+          v-if="!investmentForm && !investmentUpdateForm"
+        >
           New Investment
         </button>
       </div>
@@ -235,7 +239,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="minimumAmount"
@@ -252,7 +256,53 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
+                <div class="form-group row">
+                  <label
+                    for="maximumInvestment"
+                    class="col-md-6 col-form-label form-control-label"
+                    >Investment Access:</label
+                  >
+                  <div class="col-md-12">
+                    <!-- <base-input
+                      type="text"
+                      v-model="investmentData.maximum_amount"
+                      required
+                      id="maximumInvestment"
+                    /> -->
+                    <div class="form-group row">
+                      <div class="col-md-3 custom-control custom-checkbox pl-4" v-for="(subscription, i) in subscriptions"
+                        :key="i">
+                      <input
+                        type="checkbox"
+                        class="custom-control-input"
+                        :id="subscription.name"
+                        v-model="investmentData.access"
+                        :value="subscription.id"
+                      />
+                      <label class="custom-control-label" :for="subscription.name"
+                        >{{subscription.name}}</label
+                      >
+                    </div>
+                      <!-- <div class="col-md-3 custom-control custom-checkbox pl-4">
+                      <input
+                        type="checkbox"
+                        class="custom-control-input"
+                        id="none"
+                        v-model="investmentAccess.access"
+                        value="null"
+                        @change="checkAll"
+                      />
+                      <label class="custom-control-label" for="none"
+                        >All</label
+                      >
+                    </div> -->
+                    </div>
+                    <!-- <small>{{ investmentAccess.access }}</small> -->
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="maximumInvestment"
@@ -381,7 +431,6 @@
                   </div>
                 </div>
               </div>
-              
             </div>
             <div class="row my-5">
               <div class="col-md-4">
@@ -516,7 +565,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="minimumAmount"
@@ -533,7 +582,53 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
+                <div class="form-group row">
+                  <label
+                    for="maximumInvestment"
+                    class="col-md-6 col-form-label form-control-label"
+                    >Investment Access:</label
+                  >
+                  <div class="col-md-12">
+                    <!-- <base-input
+                      type="text"
+                      v-model="investmentData.maximum_amount"
+                      required
+                      id="maximumInvestment"
+                    /> -->
+                    <div class="form-group row">
+                      <div class="col-md-3 custom-control custom-checkbox pl-4" v-for="(subscription, i) in subscriptions"
+                        :key="i">
+                      <input
+                        type="checkbox"
+                        class="custom-control-input"
+                        :id="subscription.name"
+                        v-model="investmentUpdateData.access"
+                        :value="subscription.id"
+                      />
+                      <label class="custom-control-label" :for="subscription.name"
+                        >{{subscription.name}}</label
+                      >
+                    </div>
+                      <!-- <div class="col-md-3 custom-control custom-checkbox pl-4">
+                      <input
+                        type="checkbox"
+                        class="custom-control-input"
+                        id="none"
+                        v-model="investmentAccess.access"
+                        value="null"
+                        @change="checkAll"
+                      />
+                      <label class="custom-control-label" for="none"
+                        >All</label
+                      >
+                    </div> -->
+                    </div>
+                    <!-- <small>{{ investmentAccess.access }}</small> -->
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="maximumInvestment"
@@ -662,7 +757,6 @@
                   </div>
                 </div>
               </div>
-              
             </div>
             <div class="row my-5">
               <div class="col-md-4">
@@ -743,6 +837,7 @@ export default {
         start_date: "",
         end_date: "",
         investment_category_id: "",
+        access: [],
         maximum_amount: "",
         minimum_amount: "",
         roi: "",
@@ -760,6 +855,7 @@ export default {
         end_date: "",
         maximum_amount: "",
         minimum_amount: "",
+        access: [],
         banner_link: "",
         document_links: "",
         roi: "",
@@ -770,6 +866,10 @@ export default {
       },
       investments: null,
       categories: null,
+      subscriptions: null,
+      investmentAccess: {
+        access: [],
+      },
       investmentId: "",
       modals: {
         modal1: false,
@@ -779,14 +879,48 @@ export default {
   created() {
     this.fetchInvestments();
     this.fecthCategories();
+    this.fecthSubscriptions();
   },
   methods: {
+    // checkAll(e) {
+    //   console.log({checked: e.target.checked});
+    //   if (e.target.checked) {
+    //     this.investmentAccess.access = null
+    //   } else {
+    //     this.investmentAccess.access = []
+    //   }
+    // },
     setInvestmentId(id) {
       this.investmentId = id;
     },
+    async fecthSubscriptions() {
+      let url =
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/subscription_packages";
+      // let url = "http://209.97.136.114/api/v1/subscription_packages";
+
+      try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.subscriptions = response.data.data;
+      } catch (error) {
+        if (error.message) {
+          this.$notify({
+            type: "danger",
+            message: `Oops... ${error.message}`,
+          });
+        }
+
+        if (error.response) {
+          this.$notify({
+            type: "danger",
+            message: `Oops... Error Fetching Subscriptions`,
+          });
+        }
+      }
+    },
     async fecthCategories() {
-        let url =
-          "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
+      let url =
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
       // let url = "http://209.97.136.114/api/v1/investment/_category";
 
       try {
@@ -815,6 +949,7 @@ export default {
       this.investmentUpdateData.description = investment.description;
       this.investmentUpdateData.start_date = investment.start_date;
       this.investmentUpdateData.end_date = investment.end_date;
+      this.investmentUpdateData.access = investment.access;
       this.investmentUpdateData.maximum_amount = investment.maximum_amount;
       this.investmentUpdateData.minimum_amount = investment.minimum_amount;
       this.investmentUpdateData.banner_link = investment.banner_link;
@@ -866,7 +1001,7 @@ export default {
     async newInvestment() {
       // let url = "http://209.97.136.114/api/v1/investment/_product";
       let url =
-      "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
       this.newInvestmentLoading = true;
       this.investmentForm = false;
       console.log({ dataData: this.investmentData });
@@ -899,8 +1034,7 @@ export default {
     },
     async deleteInvestment() {
       // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url =
-        `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
+      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
       this.deleteInvestmentLoading = true;
       this.modals.modal1 = false;
       console.log({ dataData: this.investmentData });
@@ -939,7 +1073,7 @@ export default {
     // },
     async fetchInvestments() {
       let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/admin/_product";
       // let url = "http://209.97.136.114/api/v1/investment/_product";
 
       try {
