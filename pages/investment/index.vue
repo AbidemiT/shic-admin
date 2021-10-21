@@ -30,9 +30,9 @@
                   <th scope="col">Min Amount (₦)</th>
                   <th scope="col">Max Amount (₦)</th>
                   <th scope="col">Category</th>
+                  <th scope="col">Status</th>
                   <th scope="col">Start Date</th>
                   <th scope="col">End Date</th>
-                  <th scope="col">Status</th>
                 </tr>
               </thead>
               <tbody>
