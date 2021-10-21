@@ -832,7 +832,7 @@ export default {
     },
     async updateInvestment() {
       // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product//${this.investmentId}`;
+      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
       this.updateInvestmentLoading = true;
       this.investmentUpdateForm = false;
       console.log({ updateData: this.investmentUpdateData });
