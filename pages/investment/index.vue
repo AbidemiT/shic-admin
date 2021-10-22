@@ -949,7 +949,11 @@ export default {
       this.investmentUpdateData.description = investment.description;
       this.investmentUpdateData.start_date = investment.start_date;
       this.investmentUpdateData.end_date = investment.end_date;
-      this.investmentUpdateData.access = investment.access;
+      if (investment.access == null) {
+        this.investmentUpdateData.access = [];
+      } else {
+        this.investmentUpdateData.acces = investment.access;
+      }
       this.investmentUpdateData.maximum_amount = investment.maximum_amount;
       this.investmentUpdateData.minimum_amount = investment.minimum_amount;
       this.investmentUpdateData.banner_link = investment.banner_link;
