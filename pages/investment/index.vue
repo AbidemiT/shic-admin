@@ -952,7 +952,7 @@ export default {
       if (investment.access == null) {
         this.investmentUpdateData.access = [];
       } else {
-        this.investmentUpdateData.acces = investment.access;
+        this.investmentUpdateData.access = investment.access;
       }
       this.investmentUpdateData.maximum_amount = investment.maximum_amount;
       this.investmentUpdateData.minimum_amount = investment.minimum_amount;
