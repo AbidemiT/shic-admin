@@ -2,6 +2,7 @@ import service from '../services/profile-service';
 
 export const state = () => ({
   admin: null,
+  role: null,
   authenticated: false,
   accessToken: ''
 });
@@ -15,6 +16,9 @@ export const mutations = {
   },
   SET_ACCESS_TOKEN: (state, accessToken) => {
     state.accessToken = accessToken;
+  },
+  SET_ROLE: (state, role) => {
+    state.role = role;
   },
 };
 
@@ -36,5 +40,6 @@ export const actions = {
 
 export const getters = {
   me: state => state.me,
-  getAccessToken: state => state.accessToken
+  getAccessToken: state => state.accessToken,
+  getARole: state => state.role,
 };
