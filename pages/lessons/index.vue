@@ -48,9 +48,9 @@
                     {{ lesson.duration }}
                   </td>
                   <td>
-                    {{ lesson.description}}
+                    {{ lesson.description }}
                   </td>
-                  <td style="height:50px; width:80px;" v-html="lesson.link">
+                  <td style="height: 50px; width: 80px" v-html="lesson.link">
                     <!-- {{ lesson.link}} -->
                   </td>
                   <td>
@@ -58,10 +58,7 @@
                       <span
                         class="btn btn-sm btn-icon-only text-light"
                         aria-label="Dropdown menu"
-                        @click="
-                          setLessonId(lesson.id),
-                            setLesson(lesson)
-                        "
+                        @click="setLessonId(lesson.id), setLesson(lesson)"
                       >
                         <i class="fas fa-ellipsis-v mt-2"></i>
                       </span>
@@ -99,9 +96,7 @@
               <p>Are you sure you want to delete Lesson?</p>
               <template slot="footer">
                 <base-button type="primary" @click="deleteLesson">{{
-                  deleteLessonLoading
-                    ? "Deleting Lesson..."
-                    : "Delete Lesson"
+                  deleteLessonLoading ? "Deleting Lesson..." : "Delete Lesson"
                 }}</base-button>
                 <base-button
                   type="link"
@@ -142,7 +137,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-3">
                 <div class="form-group row">
                   <label
                     for="id"
@@ -173,6 +168,24 @@
                       >
                       </el-option>
                     </el-select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group row">
+                  <label
+                    for="lessonThumnail"
+                    class="col-md-6 col-form-label form-control-label"
+                    >Lesson Thumbnail:</label
+                  >
+                  <div class="col-md-12">
+                    <base-input
+                      type="text"
+                      placeholder=" lesson Thumbnail"
+                      v-model="lessonData.image"
+                      required
+                      id="lessonThumnail"
+                    />
                   </div>
                 </div>
               </div>
@@ -287,16 +300,14 @@
                   <div class="col-md-6">
                     <button class="btn btn-sm btn-success">
                       {{
-                        updateLessonLoading
-                          ? "Updating Lesson"
-                          : "Save Lesson"
+                        updateLessonLoading ? "Updating Lesson" : "Save Lesson"
                       }}
                     </button>
                   </div>
                   <div class="col-md-6">
                     <button
                       class="btn btn-sm btn-danger"
-                      @click.prevent="toggleLessonForm"
+                      @click.prevent="lessonForm = false"
                     >
                       Cancel
                     </button>
@@ -335,7 +346,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-3">
                 <div class="form-group row">
                   <label
                     for="id"
@@ -348,6 +359,24 @@
                       v-model="lessonUpdateData.lesson_category_id"
                       required
                       id="id"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group row">
+                  <label
+                    for="lessonThumnail"
+                    class="col-md-6 col-form-label form-control-label"
+                    >Lesson Thumbnail:</label
+                  >
+                  <div class="col-md-12">
+                    <base-input
+                      type="text"
+                      placeholder=" lesson Thumbnail"
+                      v-model="lessonUpdateData.image"
+                      required
+                      id="lessonThumbnail"
                     />
                   </div>
                 </div>
@@ -463,9 +492,7 @@
                   <div class="col-md-6">
                     <button class="btn btn-sm btn-success">
                       {{
-                        newLessonLoading
-                          ? "Updating Lesson"
-                          : "Update Lesson"
+                        newLessonLoading ? "Updating Lesson" : "Update Lesson"
                       }}
                     </button>
                   </div>
@@ -530,6 +557,7 @@ export default {
         duration: "",
         status: "",
         link: "",
+        image: ""
       },
       lessonUpdateData: {
         title: "",
@@ -538,9 +566,10 @@ export default {
         status: "",
         lesson_category_id: "",
         link: "",
+        image: ""
       },
       lessons: null,
-      categories: null,
+      categories: null, 
       subscriptions: null,
       lessonId: "",
       modals: {
@@ -551,7 +580,6 @@ export default {
   created() {
     this.fetchLessons();
     this.fecthCategories();
-    // this.fecthSubscriptions();
   },
   methods: {
     // checkAll(e) {
@@ -564,31 +592,6 @@ export default {
     // },
     setLessonId(id) {
       this.lessonId = id;
-    },
-    async fecthSubscriptions() {
-      let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/subscription_packages";
-      // let url = "http://209.97.136.114/api/v1/subscription_packages";
-
-      try {
-        let response = await this.$axios.get(url);
-        console.log({ response });
-        this.subscriptions = response.data.data;
-      } catch (error) {
-        if (error.message) {
-          this.$notify({
-            type: "danger",
-            message: `Oops... ${error.message}`,
-          });
-        }
-
-        if (error.response) {
-          this.$notify({
-            type: "danger",
-            message: `Oops... Error Fetching Subscriptions`,
-          });
-        }
-      }
     },
     async fecthCategories() {
       let url =
@@ -616,28 +619,27 @@ export default {
       }
     },
     setLesson(lesson) {
-      // console.log({selectedLesson: lesson});
+      console.log({selectedLesson: lesson});
       this.lessonUpdateData.title = lesson.title;
       this.lessonUpdateData.description = lesson.description;
       this.lessonUpdateData.duration = lesson.duration;
+      this.lessonUpdateData.image = lesson.image;
       this.lessonUpdateData.status = lesson.status;
-      this.lessonUpdateData.lesson_category_id = String(
-        lesson.category.id
-      );
-      this.lessonUpdateData.link = lesson.link
+      this.lessonUpdateData.lesson_category_id = String(lesson.lesson_category_id);
+      this.lessonUpdateData.link = lesson.link;
     },
     toggleLessonForm() {
-      this.lessonForm = !this.lessonForm;
+      this.lessonForm = true;
     },
     async updateLesson() {
       // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
+      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson/${this.lessonId}`;
       this.updateLessonLoading = true;
       this.lessonUpdateForm = false;
       console.log({ updateData: this.lessonUpdateData });
 
       try {
-        let response = await this.$axios.post(url, this.lessonUpdateData);
+        let response = await this.$axios.put(url, this.lessonUpdateData);
         console.log({ responseUpdate: response });
         this.updateLessonLoading = false;
         this.fetchLessons();
@@ -697,8 +699,7 @@ export default {
       }
     },
     async deleteLesson() {
-      // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
+      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson/${this.lessonId}`;
       this.deleteLessonLoading = true;
       this.modals.modal1 = false;
       console.log({ dataData: this.lessonData });
@@ -765,7 +766,7 @@ export default {
 </script>
 <style>
 iframe {
-    height: 100px !important;
-    width: 120px !important;
+  height: 100px !important;
+  width: 120px !important;
 }
 </style>
