@@ -4,6 +4,10 @@ export default function ({
 }) {
   // If the user is not authenticated
   if (!store.state.profile.authenticated) {
-    return redirect("/login");
+    return redirect("/");
+  }
+
+  if(store.state.profile.admin.roles.length != 2 || store.state.profile.admin.roles[1].name != "Super_Admin" ) {
+    return redirect("/")
   }
 }

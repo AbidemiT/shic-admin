@@ -35,8 +35,8 @@
                   <th scope="col">Max Amount (₦)</th>
                   <th scope="col">Category</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Start Date</th>
-                  <th scope="col">End Date</th>
+                  <th scope="col">Campaign Start Date</th>
+                  <th scope="col">Investment Start date</th>
                 </tr>
               </thead>
               <tbody>
@@ -381,7 +381,7 @@
                   <label
                     for="startDate"
                     class="col-md-6 col-form-label form-control-label"
-                    >Start Date:</label
+                    >Campaign Start Date:</label
                   >
                   <div class="col-md-12">
                     <base-input
@@ -398,7 +398,7 @@
                   <label
                     for="endDate"
                     class="col-md-6 col-form-label form-control-label"
-                    >End Date:</label
+                    >Investment Start Date:</label
                   >
                   <div class="col-md-12">
                     <base-input
@@ -707,7 +707,7 @@
                   <label
                     for="startDate"
                     class="col-md-6 col-form-label form-control-label"
-                    >Start Date:</label
+                    >Campaign Start Date:</label
                   >
                   <div class="col-md-12">
                     <base-input
@@ -724,7 +724,7 @@
                   <label
                     for="endDate"
                     class="col-md-6 col-form-label form-control-label"
-                    >End Date:</label
+                    >Investment Start Date:</label
                   >
                   <div class="col-md-12">
                     <base-input

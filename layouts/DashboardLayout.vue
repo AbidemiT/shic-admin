@@ -82,8 +82,46 @@
         <sidebar-item
           opened
           :link="{
+            name: 'Lesson Categories',
+            path: '/lesson-category',
+            icon: 'ni ni-ungroup',
+          }"
+        />
+        <hr
+          class="my-3"
+          style="
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            min-width: 80%;
+            overflow: visible;
+            box-sizing: content-box;
+            height: 0;
+          "
+        />
+        <sidebar-item
+          opened
+          :link="{
             name: 'Investment',
             path: '/investment',
+            icon: 'ni ni-paper-diploma',
+          }"
+        />
+        <hr
+          class="my-3"
+          style="
+            border: 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            min-width: 80%;
+            overflow: visible;
+            box-sizing: content-box;
+            height: 0;
+          "
+        />
+        <sidebar-item
+          opened
+          :link="{
+            name: 'Lessons',
+            path: '/lessons',
             icon: 'ni ni-paper-diploma',
           }"
         />
