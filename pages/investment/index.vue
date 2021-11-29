@@ -82,6 +82,12 @@
                         <a
                           class="dropdown-item"
                           href="#"
+                          @click="modals.modal2 = true"
+                          >Payout</a
+                        >
+                        <a
+                          class="dropdown-item"
+                          href="#"
                           @click="investmentUpdateForm = true"
                           >Edit Investment</a
                         >
@@ -97,6 +103,56 @@
                 </tr>
               </tbody>
             </table>
+            <modal :show.sync="modals.modal2">
+              <h6
+                slot="header"
+                class="modal-title mb-0"
+                id="modal-title-default"
+              >
+                PayOut
+              </h6>
+              <input
+                type="text"
+                class="form-control"
+                :class="payoutPercentageErr ? 'border-danger' : ''"
+                v-model="payoutPercentage"
+                placeholder="Payout percentage"
+                required
+              />
+              <small v-if="payoutPercentageErr">{{payoutPercentageErr}}</small>
+              <template slot="footer">
+                <base-button type="primary" @click="modals.modal3 = true"
+                  >Add Payout Percentage
+                </base-button>
+                <base-button
+                  type="link"
+                  class="ml-auto"
+                  @click="modals.modal2 = false"
+                  >Close
+                </base-button>
+              </template>
+            </modal>
+            <modal :show.sync="modals.modal3">
+              <h6
+                slot="header"
+                class="modal-title mb-0"
+                id="modal-title-default"
+              >
+                PayOut Confirmation
+              </h6>
+              <p>Are you sure you want to add Payout Percentage?</p>
+              <template slot="footer">
+                <base-button type="primary" @click="addPayoutPercent">{{
+                  payoutPercentLoading ? "Adding Payout percentage..." : "Yes"
+                }}</base-button>
+                <base-button
+                  type="link"
+                  class="ml-auto"
+                  @click="modals.modal3 = false, modals.modal2 = false"
+                  >Close
+                </base-button>
+              </template>
+            </modal>
             <modal :show.sync="modals.modal1">
               <h6
                 slot="header"
@@ -271,19 +327,24 @@
                       id="maximumInvestment"
                     /> -->
                     <div class="form-group row">
-                      <div class="col-md-3 custom-control custom-checkbox pl-4" v-for="(subscription, i) in subscriptions"
-                        :key="i">
-                      <input
-                        type="checkbox"
-                        class="custom-control-input"
-                        :id="subscription.name"
-                        v-model="investmentData.access"
-                        :value="subscription.id"
-                      />
-                      <label class="custom-control-label" :for="subscription.name"
-                        >{{subscription.name}}</label
+                      <div
+                        class="col-md-3 custom-control custom-checkbox pl-4"
+                        v-for="(subscription, i) in subscriptions"
+                        :key="i"
                       >
-                    </div>
+                        <input
+                          type="checkbox"
+                          class="custom-control-input"
+                          :id="subscription.name"
+                          v-model="investmentData.access"
+                          :value="subscription.id"
+                        />
+                        <label
+                          class="custom-control-label"
+                          :for="subscription.name"
+                          >{{ subscription.name }}</label
+                        >
+                      </div>
                       <!-- <div class="col-md-3 custom-control custom-checkbox pl-4">
                       <input
                         type="checkbox"
@@ -597,19 +658,24 @@
                       id="maximumInvestment"
                     /> -->
                     <div class="form-group row">
-                      <div class="col-md-3 custom-control custom-checkbox pl-4" v-for="(subscription, i) in subscriptions"
-                        :key="i">
-                      <input
-                        type="checkbox"
-                        class="custom-control-input"
-                        :id="subscription.name"
-                        v-model="investmentUpdateData.access"
-                        :value="subscription.id"
-                      />
-                      <label class="custom-control-label" :for="subscription.name"
-                        >{{subscription.name}}</label
+                      <div
+                        class="col-md-3 custom-control custom-checkbox pl-4"
+                        v-for="(subscription, i) in subscriptions"
+                        :key="i"
                       >
-                    </div>
+                        <input
+                          type="checkbox"
+                          class="custom-control-input"
+                          :id="subscription.name"
+                          v-model="investmentUpdateData.access"
+                          :value="subscription.id"
+                        />
+                        <label
+                          class="custom-control-label"
+                          :for="subscription.name"
+                          >{{ subscription.name }}</label
+                        >
+                      </div>
                       <!-- <div class="col-md-3 custom-control custom-checkbox pl-4">
                       <input
                         type="checkbox"
@@ -830,6 +896,7 @@ export default {
       newInvestmentLoading: false,
       deleteInvestmentLoading: false,
       updateInvestmentLoading: false,
+      payoutPercentLoading: false,
       investmentForm: false,
       investmentUpdateForm: false,
       investmentData: {
@@ -873,7 +940,11 @@ export default {
       investmentId: "",
       modals: {
         modal1: false,
+        modal2: false,
+        modal3: false,
       },
+      payoutPercentage: "",
+      payoutPercentageErr: "",
     };
   },
   created() {
@@ -890,6 +961,44 @@ export default {
     //     this.investmentAccess.access = []
     //   }
     // },
+    async addPayoutPercent() {
+      this.modals.modal2 = false
+      this.modals.modal3 = false
+      this.payoutPercentLoading = true
+
+      if (!this.payoutPercentage) {
+        this.payoutPercentageErr =
+          "Error... Payout percentage Field is required"
+
+          setTimeout(() => {
+            this.payoutPercentageErr = ""
+          }, 5000);
+      }
+
+      let url =
+        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/disburse";
+
+      try {
+        let response = await this.$axios.post(url, {
+          investment_product_id: this.investmentId,
+          disburse_perc: this.payoutPercentage,
+        });
+        this.payoutPercentLoading = false
+        console.log({ response });
+        this.$notify({
+          type: "success",
+          message: `Payout percentage Successfully Added`,
+        });
+      } catch (error) {
+        this.payoutPercentLoading = false
+        if (error.message) {
+          this.$notify({
+            type: "danger",
+            message: `Oops... ${error.message}`,
+          });
+        }
+      }
+    },
     setInvestmentId(id) {
       this.investmentId = id;
     },
