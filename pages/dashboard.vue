@@ -65,7 +65,7 @@ export default {
   methods: {
   },
   mounted() {
-    this.$store.dispatch('users/getUsers');
+    
     this.$store.dispatch('investment/fetchInvestments');
     this.$store.dispatch('investment/getUsersInvestment');
   },

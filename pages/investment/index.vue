@@ -140,7 +140,7 @@
               >
                 PayOut Confirmation
               </h6>
-              <p>Are you sure you want to add Payout Percentage?</p>
+              <p>Are you sure you want to add Payout Percentage? NB: Your Action is Irreversible</p>
               <template slot="footer">
                 <base-button type="primary" @click="addPayoutPercent">{{
                   payoutPercentLoading ? "Adding Payout percentage..." : "Yes"
@@ -975,6 +975,8 @@ export default {
           }, 5000);
       }
 
+      // let url =
+      //   "http://209.97.136.114/api/v1/investment/disburse";
       let url =
         "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/disburse";
 
@@ -1185,6 +1187,8 @@ export default {
     //   this.userId = userId;
     // },
     async fetchInvestments() {
+      // let url =
+      //   "http://209.97.136.114/api/v1/investment/admin/_product";
       let url =
         "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/admin/_product";
       // let url = "http://209.97.136.114/api/v1/investment/_product";
@@ -1204,7 +1208,7 @@ export default {
         if (error.response) {
           this.$notify({
             type: "danger",
-            message: `Oops... Error Fetching Categories`,
+            message: `Oops... Error Fetching Investmens`,
           });
         }
       }

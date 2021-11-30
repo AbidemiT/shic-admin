@@ -140,6 +140,7 @@ export default {
   methods: {
     async handleSubmit() {
       console.log({user: this.user});
+      // let url = 'http://209.97.136.114/api/v1/auth/login'
       let url = 'https://apiv1.smarthalalinvestorclub.com/api/v1/auth/login'
 
       try {

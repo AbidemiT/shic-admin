@@ -22,6 +22,8 @@ export const actions = {
     });
   },
   async fetchInvestments({commit}) {
+    // let url =
+    //   "http://209.97.136.114/api/v1/investment/admin/_product";
     let url =
       "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/admin/_product";
     // let url = "http://209.97.136.114/api/v1/investment/_product";

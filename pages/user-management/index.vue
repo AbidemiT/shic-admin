@@ -60,11 +60,11 @@
                   <td>
                     {{ user.id }}
                   </td>
-                  <td>
+                  <td v-if="user.profile">
                     {{ `${user.profile.first_name} ${user.profile.last_name}` }}
                   </td>
                   <td>{{ user.email }}</td>
-                  <td>{{ user.profile.phone }}</td>
+                  <td v-if="user.profile">{{ user.profile.phone }}</td>
                   <td v-if="user.subscription">
                     {{
                       user.subscription.subscription_package_id == 1
@@ -307,6 +307,7 @@ export default {
     },
     async approveUser() {
       this.approvalLoading = true
+      // let url = `http://209.97.136.114/api/v1/Management/user/subscriptions/${this.userId}`;
       let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/user/subscriptions/${this.userId}`;
       this.userSub.user_id = this.userId;
 

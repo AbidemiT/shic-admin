@@ -39,6 +39,7 @@ export const actions = {
       });
   },
   getUsers({commit}) {
+    console.log("getUsers here");
     return service.getUsers(this.$axios)
       .then((users) => {
         console.log({users});

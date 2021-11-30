@@ -7,7 +7,7 @@ export default function ({
     return redirect("/");
   }
 
-  if(store.state.profile.admin.roles.length != 2 || store.state.profile.admin.roles[1].name != "Super_Admin" ) {
+  if(store.state.profile.admin.roles.length >= 1 && store.state.profile.admin.roles[1].name != "Super_Admin" ) {
     return redirect("/")
   }
 }
