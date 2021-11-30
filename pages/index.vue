@@ -115,6 +115,7 @@ export default {
     async handleSubmit() {
       this.loading = true;
       console.log({user: this.user});
+      // let url = 'http://209.97.136.114/api/v1/auth/login'
       let url = 'https://apiv1.smarthalalinvestorclub.com/api/v1/auth/login'
 
       try {
@@ -125,8 +126,9 @@ export default {
         this.$store.commit('profile/SET_ADMIN', response.data.data.user)
         this.$store.commit('profile/SET_ACCESS_TOKEN', response.data.data.access_token)
         localStorage.setItem('token', response.data.data.access_token)
-        this.$store.dispatch('users/getUsersInvestment');
         this.$router.push("/dashboard");
+        this.$store.dispatch('users/getUsersInvestment');
+        this.$store.dispatch('users/getUsers');
       } catch (error) {
         console.log({error});
         this.loading = false
