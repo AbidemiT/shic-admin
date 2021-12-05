@@ -9,12 +9,19 @@
         <template slot="header">
           <div class="row">
             <div class="col-6">
-              <h3 class="mb-0">Investments List</h3>
+              <h3 class="mb-0">{{ headingTitle }}</h3>
             </div>
             <div class="col-6">
-              <div class="form-group">
-                <input class="form-control" type="text" placeholder="Search by User email or Investment Name" v-model="investment">
-              </div>
+              <button
+                v-if="showInvestmentUsers"
+                class="btn btn-primary btn-sm"
+                @click="
+                  (showInvestmentUsers = false),
+                    (headingTitle = 'Investments List')
+                "
+              >
+                Back
+              </button>
             </div>
           </div>
         </template>
@@ -42,33 +49,103 @@
               />
             </el-select>
           </div> -->
-          <div class="table-responsive">
+          <div class="table-responsive" v-if="!showInvestmentUsers">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">s/n</th>
+                  <th scope="col">Investment</th>
+                  <th scope="col">No. Of Investors</th>
+                  <th scope="col">Investment Target</th>
+                  <th scope="col">Amount Invested</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  @click="fetchInvestment(investment)"
+                  v-for="(investment, i) in investments"
+                  :key="i"
+                >
+                  <td>
+                    {{ i + 1 }}
+                  </td>
+                  <td>
+                    {{ `${investment.name}` }}
+                  </td>
+                  <td>{{ investment.active_investments_count }}</td>
+                  <td>
+                    ₦ {{ Number(investment.maximum_amount).toLocaleString() }}
+                  </td>
+
+                  <td>
+                    ₦
+                    {{
+                      (
+                        Number(investment.maximum_amount) -
+                        Number(investment.leftover_amount)
+                      ).toLocaleString()
+                    }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-responsive" v-else>
             <table class="table">
               <thead>
                 <tr>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
-                  <th scope="col">Investment</th>
-                  <th scope="col">Amount <br> Deposited (₦)</th>
+                  <th scope="col">
+                    Amount <br />
+                    Deposited (₦)
+                  </th>
                   <th scope="col">Depositor</th>
+                  <th scope="col">Account No.</th>
                   <th scope="col">Depositor's Bank</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="(investment, i) in searchInvestment" :key="i">
+              <tbody v-if="investmentUsers">
+                <tr v-for="(investment, i) in investmentUsers" :key="i">
                   <td>
-                    {{ `${investment.user.name}` }}
+                    {{ investment.user.name }}
                   </td>
                   <td>{{ investment.user.email }}</td>
-                  <td>
-                    {{ investment.investment_product.name}}
+                  <td
+                    v-if="
+                      investment.payment_data_transfer &&
+                      investment.payment_method == 'transfer'
+                    "
+                  >
+                    {{ investment.payment_data_transfer.amount_deposited }}
                   </td>
-                  <td>{{ investment.payment_data.amount_deposited }}</td>
-                  <td>
-                    {{investment.payment_data.account_name_sent_from}}
+                  <td
+                    v-if="
+                      investment.payment_data_transfer &&
+                      investment.payment_method == 'transfer'
+                    "
+                  >
+                    {{
+                      investment.payment_data_transfer.account_name_sent_from
+                    }}
                   </td>
-                  <td>
-                    {{investment.payment_data.bank_name_sent_from}}
+                  <td
+                    v-if="
+                      investment.payment_data_transfer &&
+                      investment.payment_method == 'transfer'
+                    "
+                  >
+                    {{
+                      investment.payment_data_transfer.account_number_sent_from
+                    }}
+                  </td>
+                  <td
+                    v-if="
+                      investment.payment_data_transfer &&
+                      investment.payment_method == 'transfer'
+                    "
+                  >
+                    {{ investment.payment_data_transfer.bank_name_sent_from }}
                   </td>
                   <td v-if="investment.status">
                     <span class="badge badge-success">Active</span>
@@ -90,23 +167,20 @@
                         role="list"
                         slot="dropdown"
                       >
-                        
-                        <a
-                          class="dropdown-item"
-                          href="#" v-if="!investment.status"
-                          @click="approveUserInvestment"
-                          >Approve Investment</a
-                        >
                         <a
                           class="dropdown-item"
                           href="#"
-                          @click="confirmDelete"
+                          v-if="!investment.status"
+                          @click="approveUserInvestment"
+                          >Approve Investment</a
+                        >
+                        <a class="dropdown-item" href="#" @click="confirmDelete"
                           >Delete Investment</a
                         >
                       </el-dropdown-menu>
                     </el-dropdown>
                   </td>
-                 <modal :show.sync="modals.modal1">
+                  <modal :show.sync="modals.modal1">
                     <h6
                       slot="header"
                       class="modal-title mb-0"
@@ -116,8 +190,14 @@
                     </h6>
                     <p>Are you sure you want to delete User Investment?</p>
                     <template slot="footer">
-                      <base-button type="primary" @click="deleteUserInvestment"
-                        >{{ deleteLoading ? 'Deleting User Investment...' : 'Delete User Investment'}}</base-button
+                      <base-button
+                        type="primary"
+                        @click="deleteUserInvestment"
+                        >{{
+                          deleteLoading
+                            ? "Deleting User Investment..."
+                            : "Delete User Investment"
+                        }}</base-button
                       >
                       <base-button
                         type="link"
@@ -130,33 +210,53 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-        </div>
-        <!-- <div
-          slot="footer"
-          class="
-            col-12
-            d-flex
-            justify-content-center justify-content-sm-between
-            flex-wrap
-          "
-        >
-          <div class="">
-            <p class="card-category">
+            <div
+              slot="footer"
+              class="
+                col-12
+                d-flex
+                justify-content-center justify-content-sm-between
+                flex-wrap
+              "
+            >
+              <div class="">
+                <!-- <p class="card-category">
               Showing {{ from + 1 }} to {{ to }} of {{ total }} entries
 
               <span v-if="selectedRows.length">
                 &nbsp; &nbsp; {{ selectedRows.length }} rows selected
               </span>
-            </p>
+            </p> -->
+              </div>
+              <nav aria-label="...">
+                <ul class="pagination">
+                  <li class="page-item" v-if="prevPage">
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Previous"
+                      @click="prev"
+                    >
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  <li class="page-item" v-if="nextPage">
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Next"
+                      @click="next"
+                    >
+                      <i class="fa fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
-          <base-pagination
-            class="pagination-no-border"
-            v-model="pagination.currentPage"
-            :per-page="pagination.perPage"
-            :total="total"
-          />
-        </div> -->
+        </div>
       </card>
     </div>
   </div>
@@ -177,7 +277,7 @@ import {
 } from "element-ui";
 
 export default {
-  middleware: 'redirect',
+  middleware: "redirect",
   layout: "DashboardLayout",
 
   components: {
@@ -195,19 +295,17 @@ export default {
 
   data() {
     return {
+      headingTitle: "Investments List",
       selectedRows: [],
       // users: [],
       sort: "created_at",
 
       pagination: {
-        perPage: 5,
-        currentPage: 1,
-        perPageOptions: [5, 10, 25, 50],
+        perPage: 20,
       },
-
       approvalLoading: false,
       deleteLoading: false,
-
+      showInvestmentUsers: false,
       total: 1,
       userSub: {
         status: 1,
@@ -215,7 +313,7 @@ export default {
         user_id: "",
         start_date: "",
       },
-      investment: '',
+      investment: "",
       userInvestmentId: "",
       modals: {
         modal1: false,
@@ -223,20 +321,27 @@ export default {
     };
   },
   mounted() {
+    
   },
   computed: {
     searchInvestment() {
-      if (this.investment === '') {
-        return this.usersInvestment
+      if (this.investment === "") {
+        return this.usersInvestment;
       } else {
         return this.usersInvestment.filter((investment) => {
-          let investmentNameAndEmail = `${investment.investment_product.name} ${investment.user.email}`
-          return investmentNameAndEmail.toLowerCase().includes(this.investment.toLowerCase())
-        })
+          let investmentNameAndEmail = `${investment.investment_product.name} ${investment.user.email}`;
+          return investmentNameAndEmail
+            .toLowerCase()
+            .includes(this.investment.toLowerCase());
+        });
       }
     },
     ...mapGetters({
+      nextPage: "investment/getNextPage",
+      prevPage: "investment/getPrevPage",
       usersInvestment: "users/getUsersInvestment",
+      investmentUsers: "investment/getInvestmentUsers",
+      investments: "investment/getInvestments",
     }),
   },
 
@@ -245,6 +350,67 @@ export default {
   },
 
   methods: {
+    async next() {   
+      let link = this.nextPage.split('/v1')
+      let linkParam = link[1]
+      let url = linkParam
+      console.log({prev: this.prevPage});
+     try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit(
+          "investment/SET_INVESTMENT_USERS",
+          response.data.data.data
+        );
+        this.$store.commit(
+          "investment/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "investment/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        
+        this.$store.commit(
+          "investment/SET_INVESTMENT_USERS_TOTAL",
+          response.data.data.total
+        );
+      } catch (error) {
+        console.log({error});
+      }
+    },
+    async prev() {
+      let link = this.prevPage.split('/v1')
+      let linkParam = link[1]
+      let url = linkParam
+      console.log({url});
+     try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit(
+          "investment/SET_INVESTMENT_USERS",
+          response.data.data.data
+        );
+        this.$store.commit(
+          "investment/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "investment/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        this.$store.commit(
+          "investment/SET_INVESTMENT_USERS_TOTAL",
+          response.data.data.total
+        );
+      } catch (error) {
+        console.log({error});
+        // this.$notify({
+        //   type: "error",
+        //   message: `${error.message}`,
+        // });
+      }
+    },
     confirmDelete() {
       this.modals.modal1 = true;
     },
@@ -252,21 +418,21 @@ export default {
       this.userInvestmentId = setUserInvestmentId;
     },
     async approveUserInvestment() {
-      this.approvalLoading = true
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments/${this.userInvestmentId}`;
+      this.approvalLoading = true;
+      let url = `/investment/investments/${this.userInvestmentId}`;
 
       try {
-        let response = await this.$axios.put(url, {status: 1});
-        this.approvalLoading = false
+        let response = await this.$axios.put(url, { status: 1 });
+        this.approvalLoading = false;
         console.log({ approvalResponse: response });
         this.$notify({
           type: "success",
           message: "Investment Approved",
         });
-        this.$store.dispatch('users/getUsersInvestment')
+        this.$store.dispatch("users/getUsersInvestment");
       } catch (error) {
         console.log({ error });
-        this.approvalLoading = false
+        this.approvalLoading = false;
         if (error.message) {
           this.$notify({
             type: "danger",
@@ -283,22 +449,22 @@ export default {
       }
     },
     async deleteUserInvestment() {
-      this.deleteLoading = true
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments/${this.userInvestmentId}`;
+      this.deleteLoading = true;
+      let url = `/investment/investments/${this.userInvestmentId}`;
 
       try {
         let response = await this.$axios.delete(url);
-        this.deleteLoading = false
+        this.deleteLoading = false;
         console.log({ approvalResponse: response });
-          this.$store.dispatch('user/getUsersInvestment')
+        this.$store.dispatch("user/getUsersInvestment");
         this.$notify({
           type: "success",
           message: "Investment Deleted",
         });
-        this.$store.dispatch('user/getUsersInvestment')
+        this.$store.dispatch("user/getUsersInvestment");
       } catch (error) {
         console.log({ error });
-        this.deleteLoading = false
+        this.deleteLoading = false;
         if (error.message) {
           this.$notify({
             type: "danger",
@@ -312,6 +478,38 @@ export default {
             message: `Oops... Error Deleting Investment`,
           });
         }
+      }
+    },
+    async fetchInvestment(investment) {
+      let url = `/investment/get-investor-by-investment-product-all/${investment.id}/${this.pagination.perPage}`;
+
+      try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+
+        this.$store.commit(
+          "investment/SET_INVESTMENT_USERS",
+          response.data.data.data
+        );
+        this.$store.commit(
+          "investment/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "investment/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        this.$store.commit(
+          "investment/SET_INVESTMENT_USERS_TOTAL",
+          response.data.data.total
+        );
+        this.headingTitle = investment.name;
+        this.showInvestmentUsers = true;
+      } catch (error) {
+        this.$notify({
+          type: "error",
+          message: `${error.message}`,
+        });
       }
     },
   },

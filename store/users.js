@@ -6,12 +6,40 @@ export const state = () => ({
   users: [],
   usersInvestment: [],
   meta: {},
-  url: null
+  url: null,
+  nextPage: '',
+  prevPage: '',
+  subscriptions: [],
+  subscriptionUsers: [],
+  unsubscribedUsers: [],
+  unsubscribedUsersTotal: '',
+  subscriptionUsersTotal: '',
 });
 
 export const mutations = {
   SET_LIST: (state, list) => {
     state.list = list;
+  },
+  SET_NEXT_PAGE: (state,payload) => {
+    state.nextPage = payload
+  },
+  SET_PREV_PAGE: (state,payload) => {
+    state.prevPage = payload
+  },
+  SET_SUBSCRIPTIONS: (state, subscriptions) => {
+    state.subscriptions = subscriptions;
+  },
+  SET_UNSUBSCRIBED_USERS: (state, unsubscribedUsers) => {
+    state.unsubscribedUsers = unsubscribedUsers;
+  },
+  SET_UNSUBSCRIBED_USERS_TOTAL: (state, unsubscribedUsers) => {
+    state.unsubscribedUsers = unsubscribedUsers;
+  },
+  SET_SUBSCRIPTION_USERS: (state, subscriptionUsers) => {
+    state.subscriptionUsers = subscriptionUsers;
+  },
+  SET_SUBSCRIPTION_USERS_TOTAL: (state, subscriptionUsersTotal) => {
+    state.subscriptionUsersTotal = subscriptionUsersTotal;
   },
   SET_RESOURCE: (state, user) => {
     state.user = user;
@@ -82,11 +110,18 @@ export const actions = {
 };
 
 export const getters = {
+  getSubscriptions: state => state.subscriptions,
   list: state => state.list,
   listTotal: state => state.meta.page.total,
   user: state => state.user,
   getUsers: state => state.users,
+  getSubscriptionUsers: state => state.subscriptionUsers,
+  getSubscriptionUsersTotal: state => state.subscriptionUsersTotal,
+  getUnsubscribedUsers: state => state.unsubscribedUsers,
+  getUnsubscribedUsersTotal: state => state.unsubscribedUsersTotal,
   getUsersInvestment: state => state.usersInvestment,
+  getPrevPage: state => state.prevPage,
+  getNextPage: state => state.nextPage,
   totalUsers: state => state.users.length,
   url: state => state.url
 };
