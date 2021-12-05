@@ -201,7 +201,7 @@ export default {
     //   this.userId = userId;
     // },
     async newInvestmentCategory() {
-      let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
+      let url = "/investment/_category";
       // let url = "http://209.97.136.114/api/v1/investment/_category";
       this.newCategoryLoading = true;
       this.modals.modal1 = false
@@ -233,7 +233,7 @@ export default {
       }
     },
     async fecthCategories() {
-        let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
+        let url = "/investment/_category";
       // let url = "http://209.97.136.114/api/v1/investment/_category";
 
       try {

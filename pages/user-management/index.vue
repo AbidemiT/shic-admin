@@ -9,11 +9,21 @@
         <template slot="header">
           <div class="row">
             <div class="col-6">
-              <h3 class="mb-0">Users List</h3>
+              <h3 class="mb-0">{{ headingTitle }}</h3>
             </div>
             <div class="col-6">
               <div class="form-group">
-                <input class="form-control" type="text" placeholder="Search by name or email" v-model="user">
+                <button
+                  v-if="showSubscriptionUsers || showUnsubscribedUsers"
+                  class="btn btn-primary btn-sm"
+                  @click="
+                    (showSubscriptionUsers = false),
+                      (showUnsubscribedUsers = false),
+                      (headingTitle = 'Subscription List')
+                  "
+                >
+                  Back
+                </button>
               </div>
             </div>
           </div>
@@ -42,7 +52,43 @@
               />
             </el-select>
           </div> -->
-          <div class="table-responsive">
+          <div
+            class="table-responsive"
+            v-if="!showSubscriptionUsers && !showUnsubscribedUsers"
+          >
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">s/n</th>
+                  <th scope="col">Subscription</th>
+                  <th scope="col">No Of Subscribers</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  @click="fetchSubscriptionUsers(sub)"
+                  v-for="(sub, i) in subscriptions"
+                  :key="i"
+                >
+                  <td>
+                    {{ i + 1 }}
+                  </td>
+                  <td>
+                    {{ sub.name }}
+                  </td>
+                  <td>{{ sub.users.length }}</td>
+                </tr>
+                <tr @click="fetchUnsubscribedUsers()">
+                  <td>
+                    {{ subscriptions.length + 1 }}
+                  </td>
+                  <td>Pending Subscription</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-responsive" v-else-if="showSubscriptionUsers">
             <table class="table">
               <thead>
                 <tr>
@@ -50,44 +96,113 @@
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
                   <th scope="col">Phone Number</th>
-                  <th scope="col">Subscription Package</th>
-                  <th scope="col">Status</th>
                   <th scope="col">Joined</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(user, i) in searchUser" :key="i">
+                <tr v-for="(subscription, i) in subscriptionUsers" :key="i">
                   <td>
-                    {{ user.id }}
+                    {{ subscription.user.id }}
                   </td>
-                  <td v-if="user.profile">
-                    {{ `${user.profile.first_name} ${user.profile.last_name}` }}
-                  </td>
-                  <td>{{ user.email }}</td>
-                  <td v-if="user.profile">{{ user.profile.phone }}</td>
-                  <td v-if="user.subscription">
+                  <td>
                     {{
-                      user.subscription.subscription_package_id == 1
-                        ? "Platinum"
-                        : user.subscription.subscription_package_id == 2
-                        ? "Gold"
-                        : "Starter"
+                      `${subscription.profile.first_name} ${subscription.profile.last_name}`
                     }}
                   </td>
-                  <td v-else>Unsubscribed</td>
-                  <td v-if="user.subscription">
-                    <span class="badge badge-success">Active</span>
+                  <td>{{ subscription.user.email }}</td>
+                  <td v-if="subscription.profile">
+                    {{ subscription.profile.phone }}
                   </td>
                   <td v-else>
                     <span class="badge badge-warning">Pending</span>
                   </td>
-                  <td>{{ user.account_creation_date }}</td>
+                  <td>{{ subscription.user.created_at }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div
+              slot="footer"
+              class="
+                col-12
+                d-flex
+                justify-content-center justify-content-sm-between
+                flex-wrap
+              "
+            >
+              <div class="">
+              </div>
+              <nav aria-label="...">
+                <ul class="pagination">
+                  <li
+                    class="page-item"
+                    v-if="prevPage"
+                  >
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Previous"
+                      @click="prev"
+                    >
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  <li
+                    class="page-item"
+                    v-if="nextPage"
+                  >
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Next"
+                      @click="nextSubscribed"
+                    >
+                      <i class="fa fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+          <div class="table-responsive" v-else>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">User ID</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Phone Number</th>
+                  <th scope="col">Joined</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(subscription, i) in unsubscribedUsers" :key="i">
                   <td>
-                    <el-dropdown trigger="click" class="dropdown" v-if="!user.subscription">
+                    {{ subscription.id }}
+                  </td>
+                  <td v-if="subscription.profile">
+                    {{
+                      `${subscription.profile.first_name} ${subscription.profile.last_name}`
+                    }}
+                  </td>
+                  <td v-else>
+                    {{ subscription.name }}
+                  </td>
+                  <td>{{ subscription.email }}</td>
+                  <td v-if="subscription.profile">
+                    {{ subscription.profile.phone }}
+                  </td>
+                  <td>
+                    <span class="badge badge-warning">Pending</span>
+                  </td>
+                  <td>{{ subscription.created_at }}</td>
+                  <td>
+                    <el-dropdown trigger="click" class="dropdown">
                       <span
                         class="btn btn-sm btn-icon-only text-light"
                         aria-label="Dropdown menu"
-                        @click="setUserId(user.id)"
+                        @click="setUserId(subscription.id)"
                       >
                         <i class="fas fa-ellipsis-v mt-2"></i>
                       </span>
@@ -122,11 +237,11 @@
                       >
                       <div class="col-md-12">
                         <el-select
-                        class="select-danger"
-                        placeholder="Select Subscription"
-                        v-model="userSub.subscription_package_id"
-                      >
-                        <el-option
+                          class="select-danger"
+                          placeholder="Select Subscription"
+                          v-model="userSub.subscription_package_id"
+                        >
+                          <!-- <el-option
                           v-for="option in [
                             { value: 1, label: 'Platinum' },
                             { value: 2, label: 'Gold' },
@@ -137,10 +252,17 @@
                           :label="option.label"
                           :key="option.label"
                         >
-                        </el-option>
-                      </el-select>
+                        </el-option> -->
+                          <el-option
+                            v-for="subscription in subscriptions"
+                            class="select-danger"
+                            :value="subscription.id"
+                            :label="subscription.name"
+                            :key="subscription.id"
+                          >
+                          </el-option>
+                        </el-select>
                       </div>
-                      
                     </div>
                     <div class="form-group row">
                       <label
@@ -159,9 +281,9 @@
                     </div>
 
                     <template slot="footer">
-                      <base-button type="primary" @click="approveUser"
-                        >{{ approvalLoading ? 'Approving User...' : 'Save changes'}}</base-button
-                      >
+                      <base-button type="primary" @click="approveUser">{{
+                        approvalLoading ? "Approving User..." : "Save changes"
+                      }}</base-button>
                       <base-button
                         type="link"
                         class="ml-auto"
@@ -173,33 +295,54 @@
                 </tr>
               </tbody>
             </table>
+
+            <div
+              slot="footer"
+              class="
+                col-12
+                d-flex
+                justify-content-center justify-content-sm-between
+                flex-wrap
+              "
+            >
+              <div class="">
+
+              </div>
+              <!-- <nav aria-label="...">
+                <ul class="pagination">
+                  <li
+                    class="page-item"
+                    :class="pagination.currentPage == 1 ? 'disabled' : ''"
+                  >
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Previous"
+                      @click="prev"
+                    >
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  <li
+                    class="page-item"
+                    :class="pagination.currentPage == totalUnsubscribed ? 'disabled' : ''"
+                  >
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Next"
+                      @click="nextUnsubscribed"
+                    >
+                      <i class="fa fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav> -->
+            </div>
           </div>
         </div>
-        <!-- <div
-          slot="footer"
-          class="
-            col-12
-            d-flex
-            justify-content-center justify-content-sm-between
-            flex-wrap
-          "
-        >
-          <div class="">
-            <p class="card-category">
-              Showing {{ from + 1 }} to {{ to }} of {{ total }} entries
-
-              <span v-if="selectedRows.length">
-                &nbsp; &nbsp; {{ selectedRows.length }} rows selected
-              </span>
-            </p>
-          </div>
-          <base-pagination
-            class="pagination-no-border"
-            v-model="pagination.currentPage"
-            :per-page="pagination.perPage"
-            :total="total"
-          />
-        </div> -->
       </card>
     </div>
   </div>
@@ -220,7 +363,7 @@ import {
 } from "element-ui";
 
 export default {
-  middleware: 'redirect',
+  middleware: "redirect",
   layout: "DashboardLayout",
 
   components: {
@@ -238,18 +381,14 @@ export default {
 
   data() {
     return {
-      selectedRows: [],
-      // users: [],
-      sort: "created_at",
-
       pagination: {
-        perPage: 5,
+        perPage: 20,
         currentPage: 1,
         perPageOptions: [5, 10, 25, 50],
       },
-
+      showSubscriptionUsers: false,
+      showUnsubscribedUsers: false,
       approvalLoading: false,
-
       total: 1,
       userSub: {
         status: 1,
@@ -258,10 +397,11 @@ export default {
         start_date: "",
       },
       userId: "",
-      user: '',
+      user: "",
       modals: {
         modal1: false,
       },
+      headingTitle: "Subscriptions List",
     };
   },
   mounted() {
@@ -269,62 +409,185 @@ export default {
     this.$modal.show("approve_user_modal");
   },
   computed: {
+    to() {
+      let highBound = this.from + this.pagination.perPage;
+      if (this.totalSubscribed < highBound) {
+        highBound = this.totalSubscribed;
+      }
+      return highBound;
+    },
+    from() {
+      return this.pagination.perPage * (this.pagination.currentPage - 1);
+    },
+    totalSubscribed() {
+      return this.subscriptionUsersTotal
+        ? this.subscriptionUsersTotal
+        : this.subscriptionUsers.length;
+    },
+    totalUnsubscribed() {
+      return this.unsubscribedUsers.length;
+    },
+    toUnsubscribed() {
+      let highBound = this.fromUnsubscribed + this.pagination.perPage;
+      if (this.totalUnsubscribed < highBound) {
+        highBound = this.totalUnsubscribed;
+      }
+      return highBound;
+    },
+    fromUnsubscribed() {
+      return this.pagination.perPage * (this.pagination.currentPage - 1);
+    },
     searchUser() {
-      if (this.user === '') {
-        return this.users
+      if (this.user === "") {
+        return this.users;
       } else {
         return this.users.filter((user) => {
-          let fullNameAndEmail = `${user.profile.first_name} ${user.profile.last_name} ${user.email}`
-          return fullNameAndEmail.toLowerCase().includes(this.user.toLowerCase())
-        })
+          let fullNameAndEmail = `${user.profile.first_name} ${user.profile.last_name} ${user.email}`;
+          return fullNameAndEmail
+            .toLowerCase()
+            .includes(this.user.toLowerCase());
+        });
       }
     },
     ...mapGetters({
       users: "users/getUsers",
+      nextPage: "users/getNextPage",
+      prevPage: "users/getPrevPage",
+      subscriptions: "users/getSubscriptions",
+      subscriptionUsers: "users/getSubscriptionUsers",
+      unsubscribedUsers: "users/getUnsubscribedUsers",
+      subscriptionUsersTotal: "users/getSubscriptionUsersTotal",
+      unsubscribedUsersTotal: "users/getUnsubscribedUsersTotal",
     }),
-    from() {
-      return this.pagination.perPage * (this.pagination.currentPage - 1);
-    },
-
-    to() {
-      let highBound = this.from + this.pagination.perPage;
-      if (this.total < highBound) {
-        highBound = this.total;
-      }
-      return highBound;
-    },
   },
-
-  created() {
-    // this.getList();
-  },
-
   methods: {
+    async nextSubscribed() {
+      console.log({next: this.nextPage});
+      let link = this.nextPage.split('/v1')
+      let linkParam = link[1]
+      let url = linkParam
+     try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS",
+          response.data.data.data
+        );
+        this.$store.commit(
+          "users/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "users/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS_TOTAL",
+          response.data.data.total
+        );
+        this.headingTitle = sub.name;
+        this.showSubscriptionUsers = true;
+        this.showUnsubscribedUsers = false;
+      } catch (error) {
+        console.log({error});
+      }
+    },
+    async nextUnsubscribed() {
+      let link = this.nextPage.split('/v1')
+      let linkParam = link[1]
+      let url = linkParam
+      console.log({url});
+     try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS",
+          response.data.data.data
+        );
+        this.$store.commit(
+          "users/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "users/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS_TOTAL",
+          response.data.data.total
+        );
+        this.headingTitle = sub.name;
+        this.showSubscriptionUsers = true;
+        this.showUnsubscribedUsers = false;
+      } catch (error) {
+        console.log({error});
+        // this.$notify({
+        //   type: "error",
+        //   message: `${error.message}`,
+        // });
+      }
+    },
+    async prev() {
+      let link = this.prevPage.split('/v1')
+      let linkParam = link[1]
+      let url = linkParam
+      console.log({url});
+     try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS",
+          response.data.data.data
+        );
+        this.$store.commit(
+          "users/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "users/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS_TOTAL",
+          response.data.data.total
+        );
+        this.headingTitle = sub.name;
+        this.showSubscriptionUsers = true;
+        this.showUnsubscribedUsers = false;
+      } catch (error) {
+        console.log({error});
+        // this.$notify({
+        //   type: "error",
+        //   message: `${error.message}`,
+        // });
+      }
+    },
     setUserId(userId) {
       console.log("Okay ooo");
       console.log(userId);
       this.userId = userId;
     },
     async approveUser() {
-      this.approvalLoading = true
+      this.approvalLoading = true;
       // let url = `http://209.97.136.114/api/v1/Management/user/subscriptions/${this.userId}`;
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/user/subscriptions/${this.userId}`;
+      let url = `/Management/user/subscriptions/${this.userId}`;
       this.userSub.user_id = this.userId;
 
       try {
         console.log({ userSub: this.userSub });
         let response = await this.$axios.put(url, this.userSub);
-        this.approvalLoading = false
-        this.$store.dispatch('users/getUsers');
-        console.log({ approvalResponse: response });
+        this.approvalLoading = false;
+        this.$store.dispatch("users/getUsers");
+        this.fetchSubscription();
+        this.fetchUnsubscribedUsers();
         this.$notify({
           type: "success",
           message: "User Approved",
         });
-        this.$store.dispatch('user/getUsers')
+        this.$store.dispatch("user/getUsers");
       } catch (error) {
         console.log({ error });
-        this.approvalLoading = false
+        this.approvalLoading = false;
         if (error.message) {
           this.$notify({
             type: "danger",
@@ -340,28 +603,70 @@ export default {
         }
       }
     },
-    getList() {
-      this.users = [
-        {
-          name: "Admin",
-          email: "admin@jsonapi.com",
-          created_at: "2020-01-01",
-        },
-      ];
-    },
-    onProFeature() {
-      this.$notify({
-        type: "danger",
-        message: "This is a PRO feature.",
-      });
-    },
-    sortChange({ prop, order }) {
-      if (order === "descending") {
-        this.sort = `-${prop}`;
-      } else {
-        this.sort = `${prop}`;
+    async fetchSubscriptionUsers(sub) {
+      let url = `/Management/user/get-user-subscriptions-using-subscription-package/${sub.id}/${this.pagination.perPage}`;
+
+      try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS",
+          response.data.data.data
+        );
+        this.$store.commit(
+          "users/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "users/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        this.$store.commit(
+          "users/SET_SUBSCRIPTION_USERS_TOTAL",
+          response.data.data.total
+        );
+        this.headingTitle = sub.name;
+        this.showSubscriptionUsers = true;
+        this.showUnsubscribedUsers = false;
+      } catch (error) {
+        this.$notify({
+          type: "error",
+          message: `${error.message}`,
+        });
       }
-      this.getList();
+    },
+    async fetchUnsubscribedUsers() {
+      let url = `/Management/user/get-user-subscriptions-using-subscription-package/0/20`;
+
+      try {
+        let response = await this.$axios.get(url);
+        console.log({ unsubscribed: response });
+        this.$store.commit("users/SET_UNSUBSCRIBED_USERS", response.data.data);
+        // this.$store.commit('users/SET_UNSUBSCRIBED_USERS_TOTAL', response.data.data.total)
+        this.headingTitle = "Pending Subscription";
+        this.showUnsubscribedUsers = true;
+        this.showSubscriptionUsers = false;
+      } catch (error) {
+        this.$notify({
+          type: "error",
+          message: `${error.message}`,
+        });
+      }
+    },
+    async fetchSubscription() {
+      let url = `/Management/subscription/packages`;
+
+      try {
+        let response = await this.$axios.get(url);
+
+        this.$store.commit("users/SET_SUBSCRIPTIONS", response.data.data);
+        // this.$store.commit('investment/SET_INVESTMENT_USERS_TOTAL', response.data.data.total)
+      } catch (error) {
+        this.$notify({
+          type: "error",
+          message: `${error.message}`,
+        });
+      }
     },
   },
 };

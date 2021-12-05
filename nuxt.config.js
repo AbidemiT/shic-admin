@@ -136,36 +136,6 @@ module.exports = {
     "@nuxtjs/auth",
     "@nuxtjs/toast"
   ],
-  /*
-   ** Auth module configuration
-   ** See https://auth.nuxtjs.org/schemes/local.html#options
-   */
-  // auth: {
-  //   strategies: {
-  //     local: {
-  //       _scheme: "~/util/authCustomStrategy.js",
-  //       endpoints: {
-  //         login: {
-  //           url: "login",
-  //           method: "post",
-  //           propertyName: "access_token"
-  //         },
-  //         logout: { url: "/logout", method: "post" },
-  //         user: {
-  //           url: "/me",
-  //           method: "get",
-  //           propertyName: false
-  //         }
-  //       }
-  //     },
-  //     redirect: {
-  //       login: "/login",
-  //       logout: "/",
-  //       callback: "/login",
-  //       home: "/dashboard"
-  //     }
-  //   }
-  // },
 
   /*
    ** Notification toast module configuration
@@ -197,7 +167,8 @@ module.exports = {
    */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
-    baseURL: process.env.API_BASE_URL,
+    // http://209.97.136.114/api/v1
+    baseURL: process.env.NODE_ENV === 'development' ? 'https://apiv1.smarthalalinvestorclub.com/api/v1' : 'https://apiv1.smarthalalinvestorclub.com/api/v1',
     headers: {
       common: {
         'Access-Control-Allow-Origin': '*',

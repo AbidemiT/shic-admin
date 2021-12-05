@@ -62,6 +62,12 @@
                         <a
                           class="dropdown-item"
                           href="#"
+                          @click="fetchCategoryLessons(category)"
+                          >View Lessons</a
+                        >
+                        <a
+                          class="dropdown-item"
+                          href="#"
                           @click="modals.modal2 = true"
                           >Edit Lesson Category</a
                         >
@@ -383,7 +389,7 @@ export default {
       this.lessonUpdateCategoryData.image = category.image
     },
     async newLessonCategory() {
-      let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson-category";
+      let url = "/Management/lesson-category";
     //   let url = "http://209.97.136.114/api/v1/Management/lesson-category";
       this.newCategoryLoading = true;
       this.modals.modal1 = false
@@ -415,7 +421,7 @@ export default {
       }
     },
     async updateLessonCategory() {
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson-category/${this.selectedCategory.id}/update`;
+      let url = `/Management/lesson-category/${this.selectedCategory.id}/update`;
     //   let url = "http://209.97.136.114/api/v1/Management/lesson-category";
       this.updateCategoryLoading = true;
       this.modals.modal2 = false
@@ -447,7 +453,7 @@ export default {
       }
     },
     async fecthCategories() {
-        let url = "https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson-category";
+        let url = "/Management/lesson-category";
     //   let url = "http://209.97.136.114/api/v1/Management/lesson-category";
 
       try {
@@ -471,7 +477,7 @@ export default {
       }
     },
     async deleteCategory() {
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson-category/${this.selectedCategory.id}/delete`;
+      let url = `/Management/lesson-category/${this.selectedCategory.id}/delete`;
       this.deleteCategoryLoading = true
       try {
         let response = await this.$axios.delete(url)
@@ -501,6 +507,30 @@ export default {
         }
       }
      
+    },
+    async fetchCategoryLessons(category) {
+      let url  = `/Management/lesson-paginate/${category.id}/20`
+
+      try {
+        let response = await this.$axios.get(url)
+
+        this.$store.commit('lessons/SET_LESSONS', response.data.data.data)
+        this.$store.commit('lessons/SET_LESSONS_TOTAL', response.data.data.total)
+        this.$store.commit(
+          "lessons/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "lessons/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+        this.$router.push('/lessons')
+      } catch (error) {
+        this.$notify({
+          type: "error",
+          message: `${error.message}`,
+        });
+      }
     }
   },
 };

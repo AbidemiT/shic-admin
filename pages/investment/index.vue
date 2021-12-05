@@ -978,7 +978,7 @@ export default {
       // let url =
       //   "http://209.97.136.114/api/v1/investment/disburse";
       let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/disburse";
+        "/investment/disburse";
 
       try {
         let response = await this.$axios.post(url, {
@@ -1006,7 +1006,7 @@ export default {
     },
     async fecthSubscriptions() {
       let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/subscription_packages";
+        "/subscription_packages";
       // let url = "http://209.97.136.114/api/v1/subscription_packages";
 
       try {
@@ -1031,7 +1031,7 @@ export default {
     },
     async fecthCategories() {
       let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_category";
+        "/investment/_category";
       // let url = "http://209.97.136.114/api/v1/investment/_category";
 
       try {
@@ -1082,7 +1082,7 @@ export default {
     },
     async updateInvestment() {
       // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
+      let url = `/investment/_product/${this.investmentId}`;
       this.updateInvestmentLoading = true;
       this.investmentUpdateForm = false;
       console.log({ updateData: this.investmentUpdateData });
@@ -1116,7 +1116,7 @@ export default {
     async newInvestment() {
       // let url = "http://209.97.136.114/api/v1/investment/_product";
       let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product";
+        "/investment/_product";
       this.newInvestmentLoading = true;
       this.investmentForm = false;
       console.log({ dataData: this.investmentData });
@@ -1149,7 +1149,7 @@ export default {
     },
     async deleteInvestment() {
       // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/investment/_product/${this.investmentId}`;
+      let url = `/investment/_product/${this.investmentId}`;
       this.deleteInvestmentLoading = true;
       this.modals.modal1 = false;
       console.log({ dataData: this.investmentData });
@@ -1190,7 +1190,7 @@ export default {
       // let url =
       //   "http://209.97.136.114/api/v1/investment/admin/_product";
       let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/admin/_product";
+        "/investment/admin/_product";
       // let url = "http://209.97.136.114/api/v1/investment/_product";
 
       try {

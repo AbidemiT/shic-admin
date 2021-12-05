@@ -3,6 +3,10 @@ import service from '../services/users-service';
 export const state = () => ({
   usersInvestment: [],
   investments: [],
+  investmentUsers: [],
+  investmentUsersTotal: 0,
+  nextPage: '',
+  prevPage: '',
 });
 
 export const mutations = {
@@ -11,6 +15,18 @@ export const mutations = {
   },
   SET_INVESTMENTS(state, payload) {
     state.investments = payload;
+  },
+  SET_INVESTMENT_USERS(state, payload) {
+    state.investmentUsers = payload;
+  },
+  SET_INVESTMENT_USERS_TOTAL(state, payload) {
+    state.investmentUsersTotal = payload;
+  },
+  SET_NEXT_PAGE: (state,payload) => {
+    state.nextPage = payload
+  },
+  SET_PREV_PAGE: (state,payload) => {
+    state.prevPage = payload
   },
 };
 
@@ -25,7 +41,7 @@ export const actions = {
     // let url =
     //   "http://209.97.136.114/api/v1/investment/admin/_product";
     let url =
-      "https://apiv1.smarthalalinvestorclub.com/api/v1/investment/admin/_product";
+      "/investment/admin/_product";
     // let url = "http://209.97.136.114/api/v1/investment/_product";
 
     try {
@@ -42,6 +58,7 @@ export const actions = {
 export const getters = {
   getUsersinvestment: (state) => state.usersInvestment,
   getInvestments: (state) => state.investments,
+  getInvestmentsTotal: state => state.investments.length,
   getCustomInvestments: (state) => {
     let names = [];
     let customInvestment = [];
@@ -58,4 +75,8 @@ export const getters = {
 
     return customInvestment;
   },
+  getInvestmentUsers: state => state.investmentUsers,
+  getInvestmentUsersTotal: state => state.investmentUsersTotal,
+  getPrevPage: state => state.prevPage,
+  getNextPage: state => state.nextPage,
 };

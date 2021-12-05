@@ -32,14 +32,14 @@ function get(id, axios) {
 
 async function getUsers(axios) {
   // let response = await axios.get(`http://209.97.136.114/api/v1/Management/user/users`)
-  let response = await axios.get(`https://apiv1.smarthalalinvestorclub.com/api/v1/Management/user/users`)
+  let response = await axios.get(`/Management/user/users`)
   console.log({response});
   let users = response.data.data
   return users;
 }
 async function getUsersInvestment(axios) {
   // let response = await axios.get(`http://209.97.136.114/api/v1/investment/investments`)
-  let response = await axios.get(`https://apiv1.smarthalalinvestorclub.com/api/v1/investment/investments`)
+  let response = await axios.get(`/investment/investments`)
   console.log({responseUserInvestment: response});
   let usersInvestment = response.data.data
   return usersInvestment;

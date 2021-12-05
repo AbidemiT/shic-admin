@@ -20,7 +20,7 @@
         <template slot="header">
           <div class="row">
             <div class="col-6">
-              <h3 class="mb-0">Lessons</h3>
+              <h3 class="mb-0">{{ lessons[0].category.title }}</h3>
             </div>
           </div>
         </template>
@@ -29,7 +29,7 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th scope="col">Lesson ID</th>
+                  <th scope="col">Lesson No.</th>
                   <th scope="col">Title</th>
                   <th scope="col">Duration</th>
                   <th scope="col">Description</th>
@@ -39,7 +39,7 @@
               <tbody>
                 <tr v-for="(lesson, i) in lessons" :key="i">
                   <td>
-                    {{ lesson.id }}
+                    {{ lesson.level }}
                   </td>
                   <td>
                     {{ lesson.title }}
@@ -50,9 +50,10 @@
                   <td>
                     {{ lesson.description }}
                   </td>
-                  <td style="height: 50px; width: 80px" v-html="lesson.link">
-                    <!-- {{ lesson.link}} -->
-                  </td>
+                  <td
+                    style="height: 50px; width: 80px"
+                    v-html="lesson.link"
+                  ></td>
                   <td>
                     <el-dropdown trigger="click" class="dropdown">
                       <span
@@ -85,6 +86,50 @@
                 </tr>
               </tbody>
             </table>
+            <div
+              slot="footer"
+              class="
+                col-12
+                d-flex
+                justify-content-center justify-content-sm-between
+                flex-wrap
+              "
+            >
+              <div class="">
+              </div>
+              <nav aria-label="...">
+                <ul class="pagination">
+                  <li
+                    class="page-item"
+                    v-if="prevPage"
+                  >
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Previous"
+                      @click="prev"
+                    >
+                      <i class="fa fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  <li
+                    class="page-item"
+                    v-if="nextPage"
+                  >
+                    <a
+                      class="page-link"
+                      href="#"
+                      aria-label="Next"
+                      @click="next"
+                    >
+                      <i class="fa fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
             <modal :show.sync="modals.modal1">
               <h6
                 slot="header"
@@ -140,34 +185,17 @@
               <div class="col-md-3">
                 <div class="form-group row">
                   <label
-                    for="id"
+                    for="lessonNumber"
                     class="col-md-6 col-form-label form-control-label"
-                    >Category ID:</label
+                    >Lesson Number:</label
                   >
                   <div class="col-md-12">
-                    <!-- <base-input
+                    <base-input
                       type="text"
-                      v-model="investmentData.investment_category_id"
+                      v-model="lessonData.level"
                       required
-                      id="id"
-                    /> -->
-
-                    <el-select
-                      class="select-danger"
-                      placeholder="Select Lesson Category"
-                      v-model="lessonData.lesson_category_id"
-                      required
-                      id="id"
-                    >
-                      <el-option
-                        v-for="category in categories"
-                        class="select-danger"
-                        :value="String(category.id)"
-                        :label="category.title"
-                        :key="category.id"
-                      >
-                      </el-option>
-                    </el-select>
+                      id="lessonNumber"
+                    />
                   </div>
                 </div>
               </div>
@@ -349,16 +377,16 @@
               <div class="col-md-3">
                 <div class="form-group row">
                   <label
-                    for="id"
+                    for="lessonUpdateLevel"
                     class="col-md-6 col-form-label form-control-label"
-                    >Category ID:</label
+                    >Lesson Number:</label
                   >
                   <div class="col-md-12">
                     <base-input
                       type="text"
-                      v-model="lessonUpdateData.lesson_category_id"
+                      v-model="lessonUpdateData.level"
                       required
-                      id="id"
+                      id="lessonUpdateLevel"
                     />
                   </div>
                 </div>
@@ -550,6 +578,7 @@ export default {
       updateLessonLoading: false,
       lessonForm: false,
       lessonUpdateForm: false,
+      sortableLesson: null,
       lessonData: {
         title: "",
         lesson_category_id: "",
@@ -557,7 +586,8 @@ export default {
         duration: "",
         status: "",
         link: "",
-        image: ""
+        level: "",
+        image: "",
       },
       lessonUpdateData: {
         title: "",
@@ -566,10 +596,10 @@ export default {
         status: "",
         lesson_category_id: "",
         link: "",
-        image: ""
+        image: "",
+        level: "",
       },
-      lessons: null,
-      categories: null, 
+      categories: null,
       subscriptions: null,
       lessonId: "",
       modals: {
@@ -578,24 +608,71 @@ export default {
     };
   },
   created() {
-    this.fetchLessons();
+    // this.fetchLessons();
     this.fecthCategories();
   },
+  computed: {
+    ...mapGetters({
+      lessons: "lessons/getLessons",
+      lessonsTotal: "lessons/getLessonsTotal",
+      nextPage: "lessons/getNextPage",
+      prevPage: "lessons/getPrevPage",
+    }),
+  },
   methods: {
-    // checkAll(e) {
-    //   console.log({checked: e.target.checked});
-    //   if (e.target.checked) {
-    //     this.investmentAccess.access = null
-    //   } else {
-    //     this.investmentAccess.access = []
-    //   }
-    // },
+    async next() {   
+      let link = this.nextPage.split('/v1')
+      let linkParam = link[1]
+      let url = linkParam
+      console.log({prev: this.prevPage});
+     try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit('lessons/SET_LESSONS', response.data.data.data)
+        this.$store.commit('lessons/SET_LESSONS_TOTAL', response.data.data.total)
+        this.$store.commit(
+          "lessons/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "lessons/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+      } catch (error) {
+        console.log({error});
+      }
+    },
+    async prev() {
+      let link = this.prevPage.split('/v1')
+      let linkParam = link[1]
+      let url = linkParam
+      console.log({url});
+     try {
+        let response = await this.$axios.get(url);
+        console.log({ response });
+        this.$store.commit('lessons/SET_LESSONS', response.data.data.data)
+        this.$store.commit('lessons/SET_LESSONS_TOTAL', response.data.data.total)
+        this.$store.commit(
+          "lessons/SET_NEXT_PAGE",
+          response.data.data.next_page_url
+        );
+        this.$store.commit(
+          "lessons/SET_PREV_PAGE",
+          response.data.data.prev_page_url
+        );
+      } catch (error) {
+        console.log({error});
+        // this.$notify({
+        //   type: "error",
+        //   message: `${error.message}`,
+        // });
+      }
+    },
     setLessonId(id) {
       this.lessonId = id;
     },
     async fecthCategories() {
-      let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson-category";
+      let url = "/Management/lesson-category";
       // let url = "http://209.97.136.114/api/v1/investment/_category";
 
       try {
@@ -619,13 +696,16 @@ export default {
       }
     },
     setLesson(lesson) {
-      console.log({selectedLesson: lesson});
+      console.log({ selectedLesson: lesson });
       this.lessonUpdateData.title = lesson.title;
+      this.lessonUpdateData.level = lesson.level;
       this.lessonUpdateData.description = lesson.description;
       this.lessonUpdateData.duration = lesson.duration;
       this.lessonUpdateData.image = lesson.image;
       this.lessonUpdateData.status = lesson.status;
-      this.lessonUpdateData.lesson_category_id = String(lesson.lesson_category_id);
+      this.lessonUpdateData.lesson_category_id = String(
+        lesson.lesson_category_id
+      );
       this.lessonUpdateData.link = lesson.link;
     },
     toggleLessonForm() {
@@ -633,7 +713,7 @@ export default {
     },
     async updateLesson() {
       // let url = `http://209.97.136.114/api/v1/investment/_product/${this.investmentId}`;
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson/${this.lessonId}`;
+      let url = `/Management/lesson/${this.lessonId}`;
       this.updateLessonLoading = true;
       this.lessonUpdateForm = false;
       console.log({ updateData: this.lessonUpdateData });
@@ -642,7 +722,7 @@ export default {
         let response = await this.$axios.put(url, this.lessonUpdateData);
         console.log({ responseUpdate: response });
         this.updateLessonLoading = false;
-        this.fetchLessons();
+        this.fetchCategoryLessons();
         this.$notify({
           type: "success",
           message: `Lesson Updated Successfully`,
@@ -666,17 +746,17 @@ export default {
     },
     async newLesson() {
       // let url = "http://209.97.136.114/api/v1/investment/_product";
-      let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson";
+      let url = "/Management/lesson";
       this.newLessonLoading = true;
       this.lessonForm = false;
+      this.lessonData.lesson_category_id = this.lessons[0].lesson_category_id;
       console.log({ dataData: this.lessonData });
 
       try {
         let response = await this.$axios.post(url, this.lessonData);
         console.log({ responseSave: response });
         this.newLessonLoading = false;
-        this.fetchLessons();
+        this.fetchCategoryLessons();
         this.$notify({
           type: "success",
           message: `Lesson created Successfully`,
@@ -699,7 +779,7 @@ export default {
       }
     },
     async deleteLesson() {
-      let url = `https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson/${this.lessonId}`;
+      let url = `/Management/lesson/${this.lessonId}`;
       this.deleteLessonLoading = true;
       this.modals.modal1 = false;
       console.log({ dataData: this.lessonData });
@@ -730,21 +810,14 @@ export default {
         }
       }
     },
-
-    // setUserId(userId) {
-    //   console.log("Okay ooo");
-    //   console.log(userId);
-    //   this.userId = userId;
-    // },
     async fetchLessons() {
-      let url =
-        "https://apiv1.smarthalalinvestorclub.com/api/v1/Management/lesson";
+      let url = "/Management/lesson";
       // let url = "http://209.97.136.114/api/v1/investment/_product";
 
       try {
         let response = await this.$axios.get(url);
         console.log({ response });
-        this.lessons = response.data.data;
+        // this.lessons = response.data.data;
       } catch (error) {
         if (error.message) {
           this.$notify({
@@ -759,6 +832,24 @@ export default {
             message: `Oops... Error Fetching Categories`,
           });
         }
+      }
+    },
+    async fetchCategoryLessons() {
+      let url = `/Management/lesson-paginate/${this.lessons[0].lesson_category_id}/20`;
+
+      try {
+        let response = await this.$axios.get(url);
+
+        this.$store.commit("lessons/SET_LESSONS", response.data.data.data);
+        this.$store.commit(
+          "lessons/SET_LESSONS_TOTAL",
+          response.data.data.total
+        );
+      } catch (error) {
+        this.$notify({
+          type: "error",
+          message: `${error.message}`,
+        });
       }
     },
   },

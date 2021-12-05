@@ -117,14 +117,6 @@
             height: 0;
           "
         />
-        <sidebar-item
-          opened
-          :link="{
-            name: 'Lessons',
-            path: '/lessons',
-            icon: 'ni ni-paper-diploma',
-          }"
-        />
       </template>
     </side-bar>
     <div class="main-content">
