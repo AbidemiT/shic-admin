@@ -1,5 +1,6 @@
 export const state = () => ({
   lessons: [],
+  lessonsCategory: '',
   lessonsTotal: 0,
   sortedLessons: [],
   nextPage: "",
@@ -9,6 +10,9 @@ export const state = () => ({
 export const mutations = {
   SET_LESSONS(state, payload) {
     state.lessons = payload;
+  },
+  SET_LESSONS_CATEGORY(state, payload) {
+    state.lessonsCategory = payload;
   },
   SET_SORTED_LESSONS(state, payload) {
     state.sortedLessons = payload;
@@ -26,6 +30,7 @@ export const mutations = {
 
 export const getters = {
   getLessons: (state) => state.lessons,
+  getLessonsCategory: (state) => state.lessonsCategory,
   getLessonsTotal: (state) => state.lessonsTotal,
   getSortedLessons: (state) => state.sortedLessons,
   getPrevPage: (state) => state.prevPage,
