@@ -20,12 +20,12 @@
         <template slot="header">
           <div class="row">
             <div class="col-6">
-              <h3 class="mb-0">{{ lessons[0].category.title }}</h3>
+              <h3 class="mb-0">{{ lessonsCategory.title }}</h3>
             </div>
           </div>
         </template>
         <div>
-          <div class="table-responsive">
+          <div class="table-responsive" v-if="lessons.length > 0">
             <table class="table">
               <thead>
                 <tr>
@@ -36,7 +36,7 @@
                   <th scope="col">Links</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody >
                 <tr v-for="(lesson, i) in lessons" :key="i">
                   <td>
                     {{ lesson.level }}
@@ -152,6 +152,9 @@
               </template>
             </modal>
           </div>
+          <div v-else class="w-100 text-center">
+                  <span>No Lessons Yet</span>
+              </div>
         </div>
       </card>
     </div>
@@ -614,6 +617,7 @@ export default {
   computed: {
     ...mapGetters({
       lessons: "lessons/getLessons",
+      lessonsCategory: "lessons/getLessonsCategory",
       lessonsTotal: "lessons/getLessonsTotal",
       nextPage: "lessons/getNextPage",
       prevPage: "lessons/getPrevPage",

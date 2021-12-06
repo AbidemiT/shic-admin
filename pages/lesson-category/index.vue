@@ -509,12 +509,13 @@ export default {
      
     },
     async fetchCategoryLessons(category) {
-      let url  = `/Management/lesson-paginate/${category.id}/20`
+      let url  = `/Management/lesson-paginate/${category.id}/5`
 
       try {
         let response = await this.$axios.get(url)
 
         this.$store.commit('lessons/SET_LESSONS', response.data.data.data)
+        this.$store.commit('lessons/SET_LESSONS_CATEGORY', category)
         this.$store.commit('lessons/SET_LESSONS_TOTAL', response.data.data.total)
         this.$store.commit(
           "lessons/SET_NEXT_PAGE",
