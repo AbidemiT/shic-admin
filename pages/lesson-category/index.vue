@@ -427,7 +427,7 @@ export default {
       this.modals.modal2 = false
 
       try {
-        let response = await this.$axios.put(url, this.lessonUpdateCategoryData);
+        let response = await this.$axios.patch(url, this.lessonUpdateCategoryData);
         console.log({ responseCat: response });
         this.updateCategoryLoading = false;
         this.$notify({
