@@ -35,8 +35,8 @@
                   <th scope="col">Max Amount (₦)</th>
                   <th scope="col">Category</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Campaign Start Date</th>
-                  <th scope="col">Investment Start date</th>
+                  <th scope="col">Investment Start Date</th>
+                  <!-- <th scope="col">Investment Start date</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -382,7 +382,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="duration"
@@ -400,7 +400,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="investmentStatus"
@@ -437,12 +437,12 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="startDate"
                     class="col-md-6 col-form-label form-control-label"
-                    >Campaign Start Date:</label
+                    >Investment Start Date:</label
                   >
                   <div class="col-md-12">
                     <base-input
@@ -454,7 +454,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <!-- <div class="col-md-3">
                 <div class="form-group row">
                   <label
                     for="endDate"
@@ -470,7 +470,7 @@
                     />
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="row">
               <div class="col-md-6">
@@ -713,7 +713,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="duration"
@@ -731,7 +731,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="investmentStatus"
@@ -768,12 +768,12 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group row">
                   <label
                     for="startDate"
                     class="col-md-6 col-form-label form-control-label"
-                    >Campaign Start Date:</label
+                    >Investment Start Date:</label
                   >
                   <div class="col-md-12">
                     <base-input
@@ -786,7 +786,7 @@
                 </div>
               </div>
               <div class="col-md-3">
-                <div class="form-group row">
+                <!-- <div class="form-group row">
                   <label
                     for="endDate"
                     class="col-md-6 col-form-label form-control-label"
@@ -800,7 +800,7 @@
                       v-model="investmentUpdateData.end_date"
                     />
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
             <div class="row">

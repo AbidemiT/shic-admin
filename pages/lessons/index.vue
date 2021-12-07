@@ -753,13 +753,14 @@ export default {
       let url = "/Management/lesson";
       this.newLessonLoading = true;
       this.lessonForm = false;
-      this.lessonData.lesson_category_id = this.lessons[0].lesson_category_id;
+      this.lessonData.lesson_category_id = this.lessonsCategory.id;
       console.log({ dataData: this.lessonData });
 
       try {
         let response = await this.$axios.post(url, this.lessonData);
         console.log({ responseSave: response });
         this.newLessonLoading = false;
+        // this.fetchLessons()
         this.fetchCategoryLessons();
         this.$notify({
           type: "success",
@@ -792,7 +793,7 @@ export default {
         let response = await this.$axios.delete(url);
         console.log({ responseDelete: response });
         this.deleteLessonLoading = false;
-        this.fetchLessons();
+        this.fetchCategoryLessons();
         this.$notify({
           type: "success",
           message: `Lesson Deleted Successfully`,
@@ -839,7 +840,7 @@ export default {
       }
     },
     async fetchCategoryLessons() {
-      let url = `/Management/lesson-paginate/${this.lessons[0].lesson_category_id}/20`;
+      let url = `/Management/lesson-paginate/${this.lessonsCategory.id}/20`;
 
       try {
         let response = await this.$axios.get(url);
