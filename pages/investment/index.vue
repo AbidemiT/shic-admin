@@ -902,7 +902,7 @@ export default {
       investmentData: {
         name: "",
         start_date: "",
-        end_date: "",
+        // end_date: "",
         investment_category_id: "",
         access: [],
         maximum_amount: "",
@@ -919,7 +919,7 @@ export default {
         name: "",
         description: "",
         start_date: "",
-        end_date: "",
+        // end_date: "",
         maximum_amount: "",
         minimum_amount: "",
         access: [],
