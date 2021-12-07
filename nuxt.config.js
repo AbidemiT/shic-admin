@@ -168,7 +168,7 @@ module.exports = {
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
     // http://209.97.136.114/api/v1
-    baseURL: process.env.NODE_ENV === 'development' ? 'http://209.97.136.114/api/v1' : 'https://apiv1.smarthalalinvestorclub.com/api/v1',
+    baseURL: process.env.NODE_ENV === 'development' ? 'https://apiv1.smarthalalinvestorclub.com/api/v1' : 'https://apiv1.smarthalalinvestorclub.com/api/v1',
     headers: {
       common: {
         'Access-Control-Allow-Origin': '*',
