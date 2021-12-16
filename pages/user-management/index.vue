@@ -29,29 +29,6 @@
           </div>
         </template>
         <div>
-          <!-- <div
-            class="
-              col-12
-              d-flex
-              justify-content-center justify-content-sm-between
-              flex-wrap
-              mb-4
-            "
-          >
-            <el-select
-              class="select-primary pagination-select"
-              v-model="pagination.perPage"
-              placeholder="Per page"
-            >
-              <el-option
-                class="select-primary"
-                v-for="item in pagination.perPageOptions"
-                :key="item"
-                :label="item"
-                :value="item"
-              />
-            </el-select>
-          </div> -->
           <div
             class="table-responsive"
             v-if="!showSubscriptionUsers && !showUnsubscribedUsers"
@@ -101,22 +78,166 @@
               </thead>
               <tbody>
                 <tr v-for="(subscription, i) in subscriptionUsers" :key="i">
-                  <td>
+                  <td v-if="subscription.user">
                     {{ subscription.user.id }}
                   </td>
-                  <td>
+                  <td v-if="subscription.profile">
                     {{
                       `${subscription.profile.first_name} ${subscription.profile.last_name}`
                     }}
                   </td>
-                  <td>{{ subscription.user.email }}</td>
+                  <td v-if="subscription.user">
+                    {{ subscription.user.email }}
+                  </td>
                   <td v-if="subscription.profile">
                     {{ subscription.profile.phone }}
                   </td>
-                  <td v-else>
+                  <!-- <td v-else>
                     <span class="badge badge-warning">Pending</span>
+                  </td> -->
+                  <td v-if="subscription.user">
+                    {{
+                      new Date(
+                        subscription.user.created_at
+                      ).toLocaleDateString()
+                    }}
                   </td>
-                  <td>{{ subscription.user.created_at }}</td>
+                  <td v-if="subscription.user">
+                    <el-dropdown trigger="click" class="dropdown">
+                      <span
+                        class="btn btn-sm btn-icon-only text-light"
+                        aria-label="Dropdown menu"
+                        @click="setUserId(subscription.id), selectedUser(subscription),setRealId(subscription.user_id)"
+                      >
+                        <i class="fas fa-ellipsis-v mt-2"></i>
+                      </span>
+                      <el-dropdown-menu
+                        class="dropdown-menu dropdown-menu-arrow show"
+                        role="list"
+                        slot="dropdown"
+                      >
+                        <a
+                          class="dropdown-item"
+                          href="#"
+                          @click="modals.modal1 = true"
+                          >Edit User</a
+                        >
+                        <a
+                          class="dropdown-item"
+                          href="#"
+                          @click="modals.modal2 = true"
+                          >Delete User</a
+                        >
+                        <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </td>
+                  <modal :show.sync="modals.modal1">
+                    <h6
+                      slot="header"
+                      class="modal-title mb-0"
+                      id="modal-title-default"
+                    >
+                      Edit User
+                    </h6>
+                    <div class="form-group row">
+                      <div class="col-md-6">
+                        <label
+                          for="updateFirstName"
+                          class="col-md-12 col-form-label form-control-label"
+                          >First Name:</label
+                        >
+                        <base-input
+                          type="text"
+                          id="updateFirstName"
+                          v-model="updateUser.first_name"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label
+                          for="updateLastName"
+                          class="col-md-12 col-form-label form-control-label"
+                          >Last Name:</label
+                        >
+                        <base-input
+                          type="text"
+                          id="updateLastName"
+                          v-model="updateUser.last_name"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-6">
+                        <label
+                          for="updatePhone"
+                          class="col-md-6 col-form-label form-control-label"
+                          >Phone:</label
+                        >
+                        <base-input
+                          type="text"
+                          id="updatePhone"
+                          v-model="updateUser.phone"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label
+                          for="updateEmail"
+                          class="col-md-6 col-form-label form-control-label"
+                          >Gender:</label
+                        >
+                        <el-select
+                          class="select-danger"
+                          placeholder="Select Gender"
+                          v-model="updateUser.gender"
+                        >
+                          <el-option
+                            v-for="option in [
+                              { value: 'male', label: 'Male' },
+                              { value: 'female', label: 'Female' },
+                            ]"
+                            class="select-success"
+                            :value="option.value"
+                            :label="option.label"
+                            :key="option.label"
+                          >
+                          </el-option>
+                        </el-select>
+                      </div>
+                    </div>
+                    <template slot="footer">
+                      <base-button type="primary" @click="updateUserFunc">{{
+                        updateLoading ? "Updating User..." : "Save changes"
+                      }}</base-button>
+                      <base-button
+                        type="link"
+                        class="ml-auto"
+                        @click="modals.modal1 = false"
+                        >Close
+                      </base-button>
+                    </template>
+                  </modal>
+                  <modal :show.sync="modals.modal2">
+                    <h6
+                      slot="header"
+                      class="modal-title mb-0"
+                      id="modal-title-default"
+                    >
+                      Delete User
+                    </h6>
+                    <p>Are you sure you want to delete User?, your Action is irreversible.</p>
+
+                    <template slot="footer">
+                      <base-button type="primary" @click="deleteUser">{{
+                        deleteLoading ? "Deleting User..." : "Delete User"
+                      }}</base-button>
+                      <base-button
+                        type="link"
+                        class="ml-auto"
+                        @click="modals.modal2 = false"
+                        >Close
+                      </base-button>
+                    </template>
+                  </modal>
                 </tr>
               </tbody>
             </table>
@@ -129,14 +250,10 @@
                 flex-wrap
               "
             >
-              <div class="">
-              </div>
+              <div class=""></div>
               <nav aria-label="...">
                 <ul class="pagination">
-                  <li
-                    class="page-item"
-                    v-if="prevPage"
-                  >
+                  <li class="page-item" v-if="prevPage">
                     <a
                       class="page-link"
                       href="#"
@@ -147,10 +264,7 @@
                       <span class="sr-only">Previous</span>
                     </a>
                   </li>
-                  <li
-                    class="page-item"
-                    v-if="nextPage"
-                  >
+                  <li class="page-item" v-if="nextPage">
                     <a
                       class="page-link"
                       href="#"
@@ -202,7 +316,7 @@
                       <span
                         class="btn btn-sm btn-icon-only text-light"
                         aria-label="Dropdown menu"
-                        @click="setUserId(subscription.id)"
+                        @click="setUserId(subscription.id), setRealId(subscription.user_id)"
                       >
                         <i class="fas fa-ellipsis-v mt-2"></i>
                       </span>
@@ -305,9 +419,7 @@
                 flex-wrap
               "
             >
-              <div class="">
-
-              </div>
+              <div class=""></div>
               <!-- <nav aria-label="...">
                 <ul class="pagination">
                   <li
@@ -389,6 +501,8 @@ export default {
       showSubscriptionUsers: false,
       showUnsubscribedUsers: false,
       approvalLoading: false,
+      deleteLoading: false,
+      updateLoading: false,
       total: 1,
       userSub: {
         status: 1,
@@ -397,11 +511,20 @@ export default {
         start_date: "",
       },
       userId: "",
+      realUserId: "",
       user: "",
       modals: {
         modal1: false,
+        modal2: false,
       },
       headingTitle: "Subscriptions List",
+      updateUser: {
+        first_name: "",
+        last_name: "",
+        gender: "",
+        phone: "",
+        // email: "",
+      },
     };
   },
   mounted() {
@@ -461,12 +584,63 @@ export default {
     }),
   },
   methods: {
+    async updateUserFunc() {
+      this.updateLoading = true
+      console.log({userid: this.realUserId});
+      let url = `/Management/user/users/${this.realUserId}`
+      try {
+        let response = await this.$axios.patch(url, this.updateUser);
+        this.updateLoading = false
+        this.$toast.success(`User Updated`)
+        this.modals.modal1 = false
+        setTimeout(() => {
+          this.$toast.clear()
+        }, 5000);
+      } catch (error) {
+        this.$toast.error(`${error.message}`)
+        this.modals.modal1 = false
+
+        setTimeout(() => {
+          this.$toast.clear()
+        }, 5000);
+        this.updateLoading = false
+      }
+    },
+    async deleteUser() {
+      this.deleteLoading = true
+      let url = `/Management/user/destroyForce/${this.realUserId}`
+      try {
+        let response = await this.$axios.delete(url);
+        this.deleteLoading = false
+        this.showSubscriptionUsers = false
+        this.modals.modal2 = false
+        this.$toast.success(`User deleted`)
+        setTimeout(() => {
+          this.$toast.clear()
+        }, 5000);
+      } catch (error) {
+        this.deleteLoading = false
+        this.modals.modal2 = false
+        this.$toast.error(`${error.message}`)
+
+        setTimeout(() => {
+          this.$toast.clear()
+        }, 5000);
+      }
+    },
+    selectedUser(value) {
+      this.updateUser.first_name = value.profile.first_name
+      this.updateUser.last_name = value.profile.last_name
+      this.updateUser.gender = value.profile.gender
+      this.updateUser.phone = value.profile.phone
+      this.updateUser.email = value.user.email
+    },
     async nextSubscribed() {
-      console.log({next: this.nextPage});
-      let link = this.nextPage.split('/v1')
-      let linkParam = link[1]
-      let url = linkParam
-     try {
+      console.log({ next: this.nextPage });
+      let link = this.nextPage.split("/v1");
+      let linkParam = link[1];
+      let url = linkParam;
+      try {
         let response = await this.$axios.get(url);
         console.log({ response });
         this.$store.commit(
@@ -485,19 +659,19 @@ export default {
           "users/SET_SUBSCRIPTION_USERS_TOTAL",
           response.data.data.total
         );
-        this.headingTitle = sub.name;
+        // this.headingTitle = sub.name;
         this.showSubscriptionUsers = true;
         this.showUnsubscribedUsers = false;
       } catch (error) {
-        console.log({error});
+        console.log({ error });
       }
     },
     async nextUnsubscribed() {
-      let link = this.nextPage.split('/v1')
-      let linkParam = link[1]
-      let url = linkParam
-      console.log({url});
-     try {
+      let link = this.nextPage.split("/v1");
+      let linkParam = link[1];
+      let url = linkParam;
+      console.log({ url });
+      try {
         let response = await this.$axios.get(url);
         console.log({ response });
         this.$store.commit(
@@ -516,11 +690,11 @@ export default {
           "users/SET_SUBSCRIPTION_USERS_TOTAL",
           response.data.data.total
         );
-        this.headingTitle = sub.name;
+        // this.headingTitle = sub.name;
         this.showSubscriptionUsers = true;
         this.showUnsubscribedUsers = false;
       } catch (error) {
-        console.log({error});
+        console.log({ error });
         // this.$notify({
         //   type: "error",
         //   message: `${error.message}`,
@@ -528,11 +702,11 @@ export default {
       }
     },
     async prev() {
-      let link = this.prevPage.split('/v1')
-      let linkParam = link[1]
-      let url = linkParam
-      console.log({url});
-     try {
+      let link = this.prevPage.split("/v1");
+      let linkParam = link[1];
+      let url = linkParam;
+      console.log({ url });
+      try {
         let response = await this.$axios.get(url);
         console.log({ response });
         this.$store.commit(
@@ -555,7 +729,7 @@ export default {
         this.showSubscriptionUsers = true;
         this.showUnsubscribedUsers = false;
       } catch (error) {
-        console.log({error});
+        console.log({ error });
         // this.$notify({
         //   type: "error",
         //   message: `${error.message}`,
@@ -566,6 +740,11 @@ export default {
       console.log("Okay ooo");
       console.log(userId);
       this.userId = userId;
+    },
+    setRealId(userId) {
+      console.log("Okay ooo");
+      console.log({userId});
+      this.realUserId = userId;
     },
     async approveUser() {
       this.approvalLoading = true;
