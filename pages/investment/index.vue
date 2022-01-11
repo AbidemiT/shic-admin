@@ -901,7 +901,7 @@ export default {
       investmentUpdateForm: false,
       investmentData: {
         name: "",
-        start_date: "",
+        start_date: null,
         // end_date: "",
         investment_category_id: "",
         access: [],
