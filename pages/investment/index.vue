@@ -119,7 +119,9 @@
                 placeholder="Payout percentage"
                 required
               />
-              <small v-if="payoutPercentageErr">{{payoutPercentageErr}}</small>
+              <small v-if="payoutPercentageErr">{{
+                payoutPercentageErr
+              }}</small>
               <template slot="footer">
                 <base-button type="primary" @click="modals.modal3 = true"
                   >Add Payout Percentage
@@ -140,7 +142,10 @@
               >
                 PayOut Confirmation
               </h6>
-              <p>Are you sure you want to add Payout Percentage? NB: Your Action is Irreversible</p>
+              <p>
+                Are you sure you want to add Payout Percentage? NB: Your Action
+                is Irreversible
+              </p>
               <template slot="footer">
                 <base-button type="primary" @click="addPayoutPercent">{{
                   payoutPercentLoading ? "Adding Payout percentage..." : "Yes"
@@ -148,7 +153,7 @@
                 <base-button
                   type="link"
                   class="ml-auto"
-                  @click="modals.modal3 = false, modals.modal2 = false"
+                  @click="(modals.modal3 = false), (modals.modal2 = false)"
                   >Close
                 </base-button>
               </template>
@@ -901,7 +906,7 @@ export default {
       investmentUpdateForm: false,
       investmentData: {
         name: "",
-        start_date: null,
+        start_date: "",
         // end_date: "",
         investment_category_id: "",
         access: [],
@@ -962,37 +967,36 @@ export default {
     //   }
     // },
     async addPayoutPercent() {
-      this.modals.modal2 = false
-      this.modals.modal3 = false
-      this.payoutPercentLoading = true
+      this.modals.modal2 = false;
+      this.modals.modal3 = false;
+      this.payoutPercentLoading = true;
 
       if (!this.payoutPercentage) {
         this.payoutPercentageErr =
-          "Error... Payout percentage Field is required"
+          "Error... Payout percentage Field is required";
 
-          setTimeout(() => {
-            this.payoutPercentageErr = ""
-          }, 5000);
+        setTimeout(() => {
+          this.payoutPercentageErr = "";
+        }, 5000);
       }
 
       // let url =
       //   "http://209.97.136.114/api/v1/investment/disburse";
-      let url =
-        "/investment/disburse";
+      let url = "/investment/disburse";
 
       try {
         let response = await this.$axios.post(url, {
           investment_product_id: this.investmentId,
           disburse_perc: this.payoutPercentage,
         });
-        this.payoutPercentLoading = false
+        this.payoutPercentLoading = false;
         console.log({ response });
         this.$notify({
           type: "success",
           message: `Payout percentage Successfully Added`,
         });
       } catch (error) {
-        this.payoutPercentLoading = false
+        this.payoutPercentLoading = false;
         if (error.message) {
           this.$notify({
             type: "danger",
@@ -1005,8 +1009,7 @@ export default {
       this.investmentId = id;
     },
     async fecthSubscriptions() {
-      let url =
-        "/subscription_packages";
+      let url = "/subscription_packages";
       // let url = "http://209.97.136.114/api/v1/subscription_packages";
 
       try {
@@ -1030,8 +1033,7 @@ export default {
       }
     },
     async fecthCategories() {
-      let url =
-        "/investment/_category";
+      let url = "/investment/_category";
       // let url = "http://209.97.136.114/api/v1/investment/_category";
 
       try {
@@ -1115,13 +1117,16 @@ export default {
     },
     async newInvestment() {
       // let url = "http://209.97.136.114/api/v1/investment/_product";
-      let url =
-        "/investment/_product";
+      let url = "/investment/_product";
       this.newInvestmentLoading = true;
       this.investmentForm = false;
-      console.log({ dataData: this.investmentData });
+
+      if (this.investmentData.start_date == "") {
+        delete this.investmentData.start_date;
+      }
 
       try {
+        console.log({ dataData: this.investmentData });
         let response = await this.$axios.post(url, this.investmentData);
         console.log({ responseSave: response });
         this.newInvestmentLoading = false;
@@ -1189,8 +1194,7 @@ export default {
     async fetchInvestments() {
       // let url =
       //   "http://209.97.136.114/api/v1/investment/admin/_product";
-      let url =
-        "/investment/admin/_product";
+      let url = "/investment/admin/_product";
       // let url = "http://209.97.136.114/api/v1/investment/_product";
 
       try {
