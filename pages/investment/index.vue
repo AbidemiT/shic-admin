@@ -1088,7 +1088,7 @@ export default {
       this.updateInvestmentLoading = true;
       this.investmentUpdateForm = false;
       console.log({ updateData: this.investmentUpdateData });
-
+  
       try {
         let response = await this.$axios.post(url, this.investmentUpdateData);
         console.log({ responseUpdate: response });

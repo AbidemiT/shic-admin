@@ -107,7 +107,11 @@
                       <span
                         class="btn btn-sm btn-icon-only text-light"
                         aria-label="Dropdown menu"
-                        @click="setUserId(subscription.id), selectedUser(subscription),setRealId(subscription.user_id)"
+                        @click="
+                          setUserId(subscription.id),
+                            selectedUser(subscription),
+                            setRealId(subscription.user_id)
+                        "
                       >
                         <i class="fas fa-ellipsis-v mt-2"></i>
                       </span>
@@ -116,6 +120,12 @@
                         role="list"
                         slot="dropdown"
                       >
+                        <a
+                          class="dropdown-item"
+                          href="#"
+                          @click="modals.modal3 = true"
+                          >Update User Subscription</a
+                        >
                         <a
                           class="dropdown-item"
                           href="#"
@@ -128,7 +138,6 @@
                           @click="modals.modal2 = true"
                           >Delete User</a
                         >
-                        <!-- <a class="dropdown-item" href="#">Something else here</a> -->
                       </el-dropdown-menu>
                     </el-dropdown>
                   </td>
@@ -224,7 +233,10 @@
                     >
                       Delete User
                     </h6>
-                    <p>Are you sure you want to delete User?, your Action is irreversible.</p>
+                    <p>
+                      Are you sure you want to delete User?, your Action is
+                      irreversible.
+                    </p>
 
                     <template slot="footer">
                       <base-button type="primary" @click="deleteUser">{{
@@ -234,6 +246,99 @@
                         type="link"
                         class="ml-auto"
                         @click="modals.modal2 = false"
+                        >Close
+                      </base-button>
+                    </template>
+                  </modal>
+                  <modal :show.sync="modals.modal3">
+                    <h6
+                      slot="header"
+                      class="modal-title mb-0"
+                      id="modal-title-default"
+                    >
+                      Update User Subscription
+                    </h6>
+                    <div class="form-group row">
+                      <label
+                        for="userSubscriptionStatus"
+                        class="col-md-6 col-form-label form-control-label"
+                        >Subscription Status:</label
+                      >
+                      <div class="col-md-12">
+                        <el-select
+                          class="select-danger"
+                          placeholder="Select Subscription Status"
+                          v-model="updateUserSub.status"
+                          required
+                          id="userSubscriptionStatus"
+                        >
+                          <el-option
+                            v-for="option in [
+                              { value: 1, label: 'Active' },
+                              { value: 0, label: 'Closed' },
+                            ]"
+                            class="select-danger"
+                            :value="option.value"
+                            :label="option.label"
+                            :key="option.label"
+                          >
+                          </el-option>
+                        </el-select>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label
+                        for="example-date-input"
+                        class="col-md-6 col-form-label form-control-label"
+                        >Subscriptions:</label
+                      >
+                      <div class="col-md-12">
+                        <el-select
+                          class="select-danger"
+                          placeholder="Select Subscription"
+                          v-model="updateUserSub.subscription_package_id"
+                        >
+                          <el-option
+                            v-for="subscription in subscriptions"
+                            class="select-danger"
+                            :value="subscription.id"
+                            :label="subscription.name"
+                            :key="subscription.id"
+                          >
+                          </el-option>
+                        </el-select>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label
+                        for="example-date-input"
+                        class="col-md-6 col-form-label form-control-label"
+                        >Start Date:</label
+                      >
+                      <div class="col-md-12">
+                        <base-input
+                          type="date"
+                          value="2018-11-23"
+                          id="example-date-input"
+                          v-model="updateUserSub.start_date"
+                        />
+                      </div>
+                    </div>
+
+                    <template slot="footer">
+                      <base-button
+                        type="primary"
+                        @click="updateUserSubscription"
+                        >{{
+                          updateUserSubscriptionLoading
+                            ? "Updating Subscription..."
+                            : "Save changes"
+                        }}</base-button
+                      >
+                      <base-button
+                        type="link"
+                        class="ml-auto"
+                        @click="modals.modal3 = false"
                         >Close
                       </base-button>
                     </template>
@@ -316,7 +421,10 @@
                       <span
                         class="btn btn-sm btn-icon-only text-light"
                         aria-label="Dropdown menu"
-                        @click="setUserId(subscription.id), setRealId(subscription.user_id)"
+                        @click="
+                          setUserId(subscription.id),
+                            setRealId(subscription.user_id)
+                        "
                       >
                         <i class="fas fa-ellipsis-v mt-2"></i>
                       </span>
@@ -500,6 +608,7 @@ export default {
       },
       showSubscriptionUsers: false,
       showUnsubscribedUsers: false,
+      updateUserSubscriptionLoading: false,
       approvalLoading: false,
       deleteLoading: false,
       updateLoading: false,
@@ -516,6 +625,7 @@ export default {
       modals: {
         modal1: false,
         modal2: false,
+        modal3: false,
       },
       headingTitle: "Subscriptions List",
       updateUser: {
@@ -524,6 +634,12 @@ export default {
         gender: "",
         phone: "",
         // email: "",
+      },
+      updateUserSub: {
+        status: 0,
+        user_id: "",
+        subscription_package_id: "",
+        start_date: null,
       },
     };
   },
@@ -585,55 +701,78 @@ export default {
   },
   methods: {
     async updateUserFunc() {
-      this.updateLoading = true
-      console.log({userid: this.realUserId});
-      let url = `/Management/user/users/${this.realUserId}`
+      this.updateLoading = true;
+      console.log({ userid: this.realUserId });
+      let url = `/Management/user/users/${this.realUserId}`;
       try {
         let response = await this.$axios.patch(url, this.updateUser);
-        this.updateLoading = false
-        this.$toast.success(`User Updated`)
-        this.modals.modal1 = false
+        this.updateLoading = false;
+        this.$toast.success(`User Updated`);
+        this.modals.modal1 = false;
         setTimeout(() => {
-          this.$toast.clear()
+          this.$toast.clear();
         }, 5000);
       } catch (error) {
-        this.$toast.error(`${error.message}`)
-        this.modals.modal1 = false
+        this.$toast.error(`${error.message}`);
+        this.modals.modal1 = false;
 
         setTimeout(() => {
-          this.$toast.clear()
+          this.$toast.clear();
         }, 5000);
-        this.updateLoading = false
+        this.updateLoading = false;
+      }
+    },
+    async updateUserSubscription() {
+      this.updateUserSubscriptionLoading = true
+      let url = `/Management/user/subscriptions/${this.realUserId}`;
+      this.updateUserSub.user_id = this.realUserId
+      try {
+        let response = await this.$axios.patch(url, this.updateUserSub);
+        console.log({response});
+        this.updateUserSubscriptionLoading = false
+        this.$toast.success(`User Subscription Updated`);
+        this.modals.modal3 = false;
+        setTimeout(() => {
+          this.$toast.clear();
+        }, 5000);
+      } catch (error) {
+        this.$toast.error(`${error.message}`);
+        this.modals.modal3 = false;
+
+        setTimeout(() => {
+          this.$toast.clear();
+        }, 5000);
+        this.updateUserSubscriptionLoading = false
       }
     },
     async deleteUser() {
-      this.deleteLoading = true
-      let url = `/Management/user/destroyForce/${this.realUserId}`
+      this.deleteLoading = true;
+      let url = `/Management/user/destroyForce/${this.realUserId}`;
       try {
         let response = await this.$axios.delete(url);
-        this.deleteLoading = false
-        this.showSubscriptionUsers = false
-        this.modals.modal2 = false
-        this.$toast.success(`User deleted`)
+        this.deleteLoading = false;
+        this.showSubscriptionUsers = false;
+        this.modals.modal2 = false;
+        this.$toast.success(`User deleted`);
         setTimeout(() => {
-          this.$toast.clear()
+          this.$toast.clear();
         }, 5000);
       } catch (error) {
-        this.deleteLoading = false
-        this.modals.modal2 = false
-        this.$toast.error(`${error.message}`)
+        this.deleteLoading = false;
+        this.modals.modal2 = false;
+        this.$toast.error(`${error.message}`);
 
         setTimeout(() => {
-          this.$toast.clear()
+          this.$toast.clear();
         }, 5000);
       }
     },
     selectedUser(value) {
-      this.updateUser.first_name = value.profile.first_name
-      this.updateUser.last_name = value.profile.last_name
-      this.updateUser.gender = value.profile.gender
-      this.updateUser.phone = value.profile.phone
-      this.updateUser.email = value.user.email
+      this.updateUser.first_name = value.profile.first_name;
+      this.updateUser.last_name = value.profile.last_name;
+      this.updateUser.gender = value.profile.gender;
+      this.updateUser.phone = value.profile.phone;
+      this.updateUser.email = value.user.email;
     },
     async nextSubscribed() {
       console.log({ next: this.nextPage });
@@ -743,7 +882,7 @@ export default {
     },
     setRealId(userId) {
       console.log("Okay ooo");
-      console.log({userId});
+      console.log({ userId });
       this.realUserId = userId;
     },
     async approveUser() {
